@@ -1,4 +1,5 @@
 type Visit {
    ip: String
+   userAgent: String
    created: Date!
 }
