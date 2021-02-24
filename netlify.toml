@@ -4,4 +4,4 @@
 [[headers]]
   for = "/*"
   [headers.values]
-    Accept = "*"
+    Referrer-Policy = "origin"
