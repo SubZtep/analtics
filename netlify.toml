@@ -1,7 +1,2 @@
 [build]
   functions = "lambda"
-
-[[headers]]
-  for = "/*"
-  [headers.values]
-    Referrer-Policy = "origin"

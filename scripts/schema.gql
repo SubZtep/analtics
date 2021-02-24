@@ -1,5 +1,12 @@
+type Account {
+  name: String
+  visits: [Visit!] @relation
+}
+
 type Visit {
-   ip: String
-   userAgent: String
-   created: Date!
+  ip: String
+  userAgent: String
+  referer: String
+  created: Time!
+  account: Account!
 }
