@@ -1,0 +1,27 @@
+{
+  "name": "analytics",
+  "version": "0.1.0",
+  "description": "Tracking embed lambda populate to GraphQL",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SubZtep/analytics.git"
+  },
+  "keywords": [
+    "analytics",
+    "graphql",
+    "lambda"
+  ],
+  "author": "Andras Serfozo <subztep@gmail.com>",
+  "license": "Unlicense",
+  "bugs": {
+    "url": "https://github.com/SubZtep/analytics/issues"
+  },
+  "homepage": "https://github.com/SubZtep/analytics#readme",
+  "dependencies": {
+    "faunadb": "^4.1.1"
+  }
+}

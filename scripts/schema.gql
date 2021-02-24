@@ -1,0 +1,4 @@
+type Visit {
+   ip: String
+   created: Date!
+}
