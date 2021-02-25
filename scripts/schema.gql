@@ -7,6 +7,7 @@ type Visit {
   ip: String
   userAgent: String
   referer: String
+  noscript: Boolean
   created: Time!
   account: Account!
 }
