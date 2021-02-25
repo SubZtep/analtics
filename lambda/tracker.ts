@@ -1,7 +1,7 @@
-// import { APIGatewayProxyEvent, APIGatewayProxyCallback } from "aws-lambda"
+import type { APIGatewayProxyEvent } from "aws-lambda"
 import fetch from "node-fetch"
 
-const gql = (url, secret) => async mutation =>
+const gql = (url: string, secret: string) => async (mutation: string) =>
   await fetch(url, {
     method: "POST",
     headers: {
@@ -11,11 +11,11 @@ const gql = (url, secret) => async mutation =>
     body: JSON.stringify({ query: mutation }),
   })
 
-const createVisit = event => `mutation {
+const createVisit = (event: APIGatewayProxyEvent) => `mutation {
   createVisit(data: {
     ip: "${event.headers["client-ip"]}",
     userAgent: "${event.headers["user-agent"]}",
-    referer: "${event.queryStringParameters.referer || ""}",
+    referer: "${event.headers.referer || ""}",
     noscript: ${event.queryStringParameters.noscript || "false"},
     created: "${new Date().toISOString()}",
     account: {
@@ -26,14 +26,14 @@ const createVisit = event => `mutation {
   }
 }`
 
-exports.handler = async event => {
+exports.handler = async (event: APIGatewayProxyEvent) => {
   const dbres = await gql(process.env.GRAPHQL_URL, process.env.GRAPHQL_SECRET)(createVisit(event))
   const response: { [key: string]: any } = { statusCode: dbres.status }
 
   if (dbres.ok) {
     response.headers = {
       "Content-Type": event.queryStringParameters.noscript ? "text/css" : "text/javascript",
-      // "X-Content-Type-Options": "nosniff",
+      "X-Content-Type-Options": "nosniff",
     }
     response.body = ""
   } else {
