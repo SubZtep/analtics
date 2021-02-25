@@ -1,4 +1,4 @@
-# Analytics :godmode:
+# Analytics:godmode:
 
 Analytics service that track and report website traffic to GraphQL. Keep it simple.
 
