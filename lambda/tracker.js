@@ -4,7 +4,7 @@ var ce=Object.create,V=Object.defineProperty,le=Object.getPrototypeOf,he=Object.
     ip: "${t.headers["client-ip"]}",
     userAgent: "${t.headers["user-agent"]}",
     referer: "${t.queryStringParameters.referer||""}",
-    noscript: "${t.queryStringParameters.noscript?"true":"false"}",
+    noscript: ${t.queryStringParameters.noscript?"true":"false"},
     created: "${new Date().toISOString()}",
     account: {
       connect: "${t.queryStringParameters.account}"
