@@ -14,8 +14,8 @@ const createVisit = event => `mutation {
   createVisit(data: {
     ip: "${event.headers["client-ip"]}",
     userAgent: "${event.headers["user-agent"]}",
-    referer: ${event.queryStringParameters.referer || ""},
-    noscript: ${event.queryStringParameters.noscript ? "true" : "false"},
+    referer: "${event.queryStringParameters.referer || ""}",
+    noscript: "${event.queryStringParameters.noscript ? "true" : "false"}",
     created: "${new Date().toISOString()}",
     account: {
       connect: "${event.queryStringParameters.account}"
