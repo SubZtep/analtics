@@ -4,6 +4,8 @@
   "description": "Tracking embed lambda populate to GraphQL",
   "main": "index.js",
   "scripts": {
+    "dev-build": "esbuild lambda/tracker.js --bundle --platform=node --target=node14 --outfile=lambda/visit.js",
+    "build": "esbuild lambda/tracker.js --bundle --minify --format=cjs --platform=node --target=node14 --outfile=lambda/visit.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -22,6 +24,6 @@
   },
   "homepage": "https://github.com/SubZtep/analytics#readme",
   "dependencies": {
-    "faunadb": "^4.1.1"
+    "node-fetch": "^2.6.1"
   }
 }
