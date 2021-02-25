@@ -32,7 +32,7 @@ exports.handler = async (event: APIGatewayProxyEvent) => {
 
   if (dbres.ok) {
     response.headers = {
-      "Content-Type": event.queryStringParameters.noscript ? "text/css" : "text/javascript",
+      "Content-Type": event.queryStringParameters.noscript ? "text/html" : "text/javascript",
       "X-Content-Type-Options": "nosniff",
     }
     response.body = ""
