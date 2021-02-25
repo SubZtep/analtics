@@ -1,12 +1,1064 @@
-var de=Object.create,V=Object.defineProperty,he=Object.getPrototypeOf,pe=Object.prototype.hasOwnProperty,me=Object.getOwnPropertyNames,ye=Object.getOwnPropertyDescriptor;var ge=e=>V(e,"__esModule",{value:!0});var be=(e,t,r)=>{if(t&&typeof t=="object"||typeof t=="function")for(let o of me(t))!pe.call(e,o)&&o!=="default"&&V(e,o,{get:()=>t[o],enumerable:!(r=ye(t,o))||r.enumerable});return e},_=e=>e&&e.__esModule?e:be(ge(V(e!=null?de(he(e)):{},"default",{value:e,enumerable:!0})),e);var m=_(require("stream")),G=_(require("http")),I=_(require("url")),ee=_(require("https")),O=_(require("zlib")),we=m.default.Readable,w=Symbol("buffer"),M=Symbol("type"),$=class{constructor(){this[M]="";let t=arguments[0],r=arguments[1],o=[],n=0;if(t){let l=t,a=Number(l.length);for(let i=0;i<a;i++){let f=l[i],g;f instanceof Buffer?g=f:ArrayBuffer.isView(f)?g=Buffer.from(f.buffer,f.byteOffset,f.byteLength):f instanceof ArrayBuffer?g=Buffer.from(f):f instanceof $?g=f[w]:g=Buffer.from(typeof f=="string"?f:String(f)),n+=g.length,o.push(g)}}this[w]=Buffer.concat(o);let s=r&&r.type!==void 0&&String(r.type).toLowerCase();s&&!/[^\u0020-\u007E]/.test(s)&&(this[M]=s)}get size(){return this[w].length}get type(){return this[M]}text(){return Promise.resolve(this[w].toString())}arrayBuffer(){let t=this[w],r=t.buffer.slice(t.byteOffset,t.byteOffset+t.byteLength);return Promise.resolve(r)}stream(){let t=new we;return t._read=function(){},t.push(this[w]),t.push(null),t}toString(){return"[object Blob]"}slice(){let t=this.size,r=arguments[0],o=arguments[1],n,s;r===void 0?n=0:r<0?n=Math.max(t+r,0):n=Math.min(r,t),o===void 0?s=t:o<0?s=Math.max(t+o,0):s=Math.min(o,t);let l=Math.max(s-n,0),i=this[w].slice(n,n+l),f=new $([],{type:arguments[2]});return f[w]=i,f}};Object.defineProperties($.prototype,{size:{enumerable:!0},type:{enumerable:!0},slice:{enumerable:!0}});Object.defineProperty($.prototype,Symbol.toStringTag,{value:"Blob",writable:!1,enumerable:!1,configurable:!0});function h(e,t,r){Error.call(this,e),this.message=e,this.type=t,r&&(this.code=this.errno=r.code),Error.captureStackTrace(this,this.constructor)}h.prototype=Object.create(Error.prototype);h.prototype.constructor=h;h.prototype.name="FetchError";var K;try{K=require("encoding").convert}catch(e){}var T=Symbol("Body internals"),te=m.default.PassThrough;function d(e){var t=this,r=arguments.length>1&&arguments[1]!==void 0?arguments[1]:{},o=r.size;let n=o===void 0?0:o;var s=r.timeout;let l=s===void 0?0:s;e==null?e=null:re(e)?e=Buffer.from(e.toString()):j(e)||Buffer.isBuffer(e)||(Object.prototype.toString.call(e)==="[object ArrayBuffer]"?e=Buffer.from(e):ArrayBuffer.isView(e)?e=Buffer.from(e.buffer,e.byteOffset,e.byteLength):e instanceof m.default||(e=Buffer.from(String(e)))),this[T]={body:e,disturbed:!1,error:null},this.size=n,this.timeout=l,e instanceof m.default&&e.on("error",function(a){let i=a.name==="AbortError"?a:new h(`Invalid response body while trying to fetch ${t.url}: ${a.message}`,"system",a);t[T].error=i})}d.prototype={get body(){return this[T].body},get bodyUsed(){return this[T].disturbed},arrayBuffer(){return C.call(this).then(function(e){return e.buffer.slice(e.byteOffset,e.byteOffset+e.byteLength)})},blob(){let e=this.headers&&this.headers.get("content-type")||"";return C.call(this).then(function(t){return Object.assign(new $([],{type:e.toLowerCase()}),{[w]:t})})},json(){var e=this;return C.call(this).then(function(t){try{return JSON.parse(t.toString())}catch(r){return d.Promise.reject(new h(`invalid json response body at ${e.url} reason: ${r.message}`,"invalid-json"))}})},text(){return C.call(this).then(function(e){return e.toString()})},buffer(){return C.call(this)},textConverted(){var e=this;return C.call(this).then(function(t){return Te(t,e.headers)})}};Object.defineProperties(d.prototype,{body:{enumerable:!0},bodyUsed:{enumerable:!0},arrayBuffer:{enumerable:!0},blob:{enumerable:!0},json:{enumerable:!0},text:{enumerable:!0}});d.mixIn=function(e){for(let t of Object.getOwnPropertyNames(d.prototype))if(!(t in e)){let r=Object.getOwnPropertyDescriptor(d.prototype,t);Object.defineProperty(e,t,r)}};function C(){var e=this;if(this[T].disturbed)return d.Promise.reject(new TypeError(`body used already for: ${this.url}`));if(this[T].disturbed=!0,this[T].error)return d.Promise.reject(this[T].error);let t=this.body;if(t===null)return d.Promise.resolve(Buffer.alloc(0));if(j(t)&&(t=t.stream()),Buffer.isBuffer(t))return d.Promise.resolve(t);if(!(t instanceof m.default))return d.Promise.resolve(Buffer.alloc(0));let r=[],o=0,n=!1;return new d.Promise(function(s,l){let a;e.timeout&&(a=setTimeout(function(){n=!0,l(new h(`Response timeout while trying to fetch ${e.url} (over ${e.timeout}ms)`,"body-timeout"))},e.timeout)),t.on("error",function(i){i.name==="AbortError"?(n=!0,l(i)):l(new h(`Invalid response body while trying to fetch ${e.url}: ${i.message}`,"system",i))}),t.on("data",function(i){if(!(n||i===null)){if(e.size&&o+i.length>e.size){n=!0,l(new h(`content size at ${e.url} over limit: ${e.size}`,"max-size"));return}o+=i.length,r.push(i)}}),t.on("end",function(){if(!n){clearTimeout(a);try{s(Buffer.concat(r,o))}catch(i){l(new h(`Could not create Buffer from response body for ${e.url}: ${i.message}`,"system",i))}}})})}function Te(e,t){if(typeof K!="function")throw new Error("The package `encoding` must be installed to use the textConverted() function");let r=t.get("content-type"),o="utf-8",n,s;return r&&(n=/charset=([^;]*)/i.exec(r)),s=e.slice(0,1024).toString(),!n&&s&&(n=/<meta.+?charset=(['"])(.+?)\1/i.exec(s)),!n&&s&&(n=/<meta[\s]+?http-equiv=(['"])content-type\1[\s]+?content=(['"])(.+?)\2/i.exec(s),n||(n=/<meta[\s]+?content=(['"])(.+?)\1[\s]+?http-equiv=(['"])content-type\3/i.exec(s),n&&n.pop()),n&&(n=/charset=(.*)/i.exec(n.pop()))),!n&&s&&(n=/<\?xml.+?encoding=(['"])(.+?)\1/i.exec(s)),n&&(o=n.pop(),(o==="gb2312"||o==="gbk")&&(o="gb18030")),K(e,"UTF-8",o).toString()}function re(e){return typeof e!="object"||typeof e.append!="function"||typeof e.delete!="function"||typeof e.get!="function"||typeof e.getAll!="function"||typeof e.has!="function"||typeof e.set!="function"?!1:e.constructor.name==="URLSearchParams"||Object.prototype.toString.call(e)==="[object URLSearchParams]"||typeof e.sort=="function"}function j(e){return typeof e=="object"&&typeof e.arrayBuffer=="function"&&typeof e.type=="string"&&typeof e.stream=="function"&&typeof e.constructor=="function"&&typeof e.constructor.name=="string"&&/^(Blob|File)$/.test(e.constructor.name)&&/^(Blob|File)$/.test(e[Symbol.toStringTag])}function ne(e){let t,r,o=e.body;if(e.bodyUsed)throw new Error("cannot clone body after it is used");return o instanceof m.default&&typeof o.getBoundary!="function"&&(t=new te,r=new te,o.pipe(t),o.pipe(r),e[T].body=t,o=r),o}function oe(e){return e===null?null:typeof e=="string"?"text/plain;charset=UTF-8":re(e)?"application/x-www-form-urlencoded;charset=UTF-8":j(e)?e.type||null:Buffer.isBuffer(e)||Object.prototype.toString.call(e)==="[object ArrayBuffer]"||ArrayBuffer.isView(e)?null:typeof e.getBoundary=="function"?`multipart/form-data;boundary=${e.getBoundary()}`:e instanceof m.default?null:"text/plain;charset=UTF-8"}function se(e){let t=e.body;return t===null?0:j(t)?t.size:Buffer.isBuffer(t)?t.length:t&&typeof t.getLengthSync=="function"&&(t._lengthRetrievers&&t._lengthRetrievers.length==0||t.hasKnownLength&&t.hasKnownLength())?t.getLengthSync():null}function Se(e,t){let r=t.body;r===null?e.end():j(r)?r.stream().pipe(e):Buffer.isBuffer(r)?(e.write(r),e.end()):r.pipe(e)}d.Promise=global.Promise;var ie=/[^\^_`a-zA-Z\-0-9!#$%&'*+.|~]/,Y=/[^\t\x20-\x7e\x80-\xff]/;function U(e){if(e=`${e}`,ie.test(e)||e==="")throw new TypeError(`${e} is not a legal HTTP header name`)}function ae(e){if(e=`${e}`,Y.test(e))throw new TypeError(`${e} is not a legal HTTP header value`)}function R(e,t){t=t.toLowerCase();for(let r in e)if(r.toLowerCase()===t)return r}var u=Symbol("map"),y=class{constructor(){let t=arguments.length>0&&arguments[0]!==void 0?arguments[0]:void 0;if(this[u]=Object.create(null),t instanceof y){let r=t.raw(),o=Object.keys(r);for(let n of o)for(let s of r[n])this.append(n,s);return}if(t!=null)if(typeof t=="object"){let r=t[Symbol.iterator];if(r!=null){if(typeof r!="function")throw new TypeError("Header pairs must be iterable");let o=[];for(let n of t){if(typeof n!="object"||typeof n[Symbol.iterator]!="function")throw new TypeError("Each header pair must be iterable");o.push(Array.from(n))}for(let n of o){if(n.length!==2)throw new TypeError("Each header pair must be a name/value tuple");this.append(n[0],n[1])}}else for(let o of Object.keys(t)){let n=t[o];this.append(o,n)}}else throw new TypeError("Provided initializer must be an object")}get(t){t=`${t}`,U(t);let r=R(this[u],t);return r===void 0?null:this[u][r].join(", ")}forEach(t){let r=arguments.length>1&&arguments[1]!==void 0?arguments[1]:void 0,o=Z(this),n=0;for(;n<o.length;){var s=o[n];let l=s[0],a=s[1];t.call(r,a,l,this),o=Z(this),n++}}set(t,r){t=`${t}`,r=`${r}`,U(t),ae(r);let o=R(this[u],t);this[u][o!==void 0?o:t]=[r]}append(t,r){t=`${t}`,r=`${r}`,U(t),ae(r);let o=R(this[u],t);o!==void 0?this[u][o].push(r):this[u][t]=[r]}has(t){return t=`${t}`,U(t),R(this[u],t)!==void 0}delete(t){t=`${t}`,U(t);let r=R(this[u],t);r!==void 0&&delete this[u][r]}raw(){return this[u]}keys(){return J(this,"key")}values(){return J(this,"value")}[Symbol.iterator](){return J(this,"key+value")}};y.prototype.entries=y.prototype[Symbol.iterator];Object.defineProperty(y.prototype,Symbol.toStringTag,{value:"Headers",writable:!1,enumerable:!1,configurable:!0});Object.defineProperties(y.prototype,{get:{enumerable:!0},forEach:{enumerable:!0},set:{enumerable:!0},append:{enumerable:!0},has:{enumerable:!0},delete:{enumerable:!0},keys:{enumerable:!0},values:{enumerable:!0},entries:{enumerable:!0}});function Z(e){let t=arguments.length>1&&arguments[1]!==void 0?arguments[1]:"key+value";return Object.keys(e[u]).sort().map(t==="key"?function(o){return o.toLowerCase()}:t==="value"?function(o){return e[u][o].join(", ")}:function(o){return[o.toLowerCase(),e[u][o].join(", ")]})}var Q=Symbol("internal");function J(e,t){let r=Object.create(W);return r[Q]={target:e,kind:t,index:0},r}var W=Object.setPrototypeOf({next(){if(!this||Object.getPrototypeOf(this)!==W)throw new TypeError("Value of `this` is not a HeadersIterator");var e=this[Q];let t=e.target,r=e.kind,o=e.index,n=Z(t,r),s=n.length;return o>=s?{value:void 0,done:!0}:(this[Q].index=o+1,{value:n[o],done:!1})}},Object.getPrototypeOf(Object.getPrototypeOf([][Symbol.iterator]())));Object.defineProperty(W,Symbol.toStringTag,{value:"HeadersIterator",writable:!1,enumerable:!1,configurable:!0});function Ee(e){let t=Object.assign({__proto__:null},e[u]),r=R(e[u],"Host");return r!==void 0&&(t[r]=t[r][0]),t}function Oe(e){let t=new y;for(let r of Object.keys(e))if(!ie.test(r))if(Array.isArray(e[r]))for(let o of e[r])Y.test(o)||(t[u][r]===void 0?t[u][r]=[o]:t[u][r].push(o));else Y.test(e[r])||(t[u][r]=[e[r]]);return t}var P=Symbol("Response internals"),Pe=G.default.STATUS_CODES,b=class{constructor(){let t=arguments.length>0&&arguments[0]!==void 0?arguments[0]:null,r=arguments.length>1&&arguments[1]!==void 0?arguments[1]:{};d.call(this,t,r);let o=r.status||200,n=new y(r.headers);if(t!=null&&!n.has("Content-Type")){let s=oe(t);s&&n.append("Content-Type",s)}this[P]={url:r.url,status:o,statusText:r.statusText||Pe[o],headers:n,counter:r.counter}}get url(){return this[P].url||""}get status(){return this[P].status}get ok(){return this[P].status>=200&&this[P].status<300}get redirected(){return this[P].counter>0}get statusText(){return this[P].statusText}get headers(){return this[P].headers}clone(){return new b(ne(this),{url:this.url,status:this.status,statusText:this.statusText,headers:this.headers,ok:this.ok,redirected:this.redirected})}};d.mixIn(b.prototype);Object.defineProperties(b.prototype,{url:{enumerable:!0},status:{enumerable:!0},ok:{enumerable:!0},redirected:{enumerable:!0},statusText:{enumerable:!0},headers:{enumerable:!0},clone:{enumerable:!0}});Object.defineProperty(b.prototype,Symbol.toStringTag,{value:"Response",writable:!1,enumerable:!1,configurable:!0});var S=Symbol("Request internals"),X=I.default.parse,xe=I.default.format,Be="destroy"in m.default.Readable.prototype;function F(e){return typeof e=="object"&&typeof e[S]=="object"}function ve(e){let t=e&&typeof e=="object"&&Object.getPrototypeOf(e);return!!(t&&t.constructor.name==="AbortSignal")}var x=class{constructor(t){let r=arguments.length>1&&arguments[1]!==void 0?arguments[1]:{},o;F(t)?o=X(t.url):(t&&t.href?o=X(t.href):o=X(`${t}`),t={});let n=r.method||t.method||"GET";if(n=n.toUpperCase(),(r.body!=null||F(t)&&t.body!==null)&&(n==="GET"||n==="HEAD"))throw new TypeError("Request with GET/HEAD method cannot have body");let s=r.body!=null?r.body:F(t)&&t.body!==null?ne(t):null;d.call(this,s,{timeout:r.timeout||t.timeout||0,size:r.size||t.size||0});let l=new y(r.headers||t.headers||{});if(s!=null&&!l.has("Content-Type")){let i=oe(s);i&&l.append("Content-Type",i)}let a=F(t)?t.signal:null;if("signal"in r&&(a=r.signal),a!=null&&!ve(a))throw new TypeError("Expected signal to be an instanceof AbortSignal");this[S]={method:n,redirect:r.redirect||t.redirect||"follow",headers:l,parsedURL:o,signal:a},this.follow=r.follow!==void 0?r.follow:t.follow!==void 0?t.follow:20,this.compress=r.compress!==void 0?r.compress:t.compress!==void 0?t.compress:!0,this.counter=r.counter||t.counter||0,this.agent=r.agent||t.agent}get method(){return this[S].method}get url(){return xe(this[S].parsedURL)}get headers(){return this[S].headers}get redirect(){return this[S].redirect}get signal(){return this[S].signal}clone(){return new x(this)}};d.mixIn(x.prototype);Object.defineProperty(x.prototype,Symbol.toStringTag,{value:"Request",writable:!1,enumerable:!1,configurable:!0});Object.defineProperties(x.prototype,{method:{enumerable:!0},url:{enumerable:!0},headers:{enumerable:!0},redirect:{enumerable:!0},clone:{enumerable:!0},signal:{enumerable:!0}});function $e(e){let t=e[S].parsedURL,r=new y(e[S].headers);if(r.has("Accept")||r.set("Accept","*/*"),!t.protocol||!t.hostname)throw new TypeError("Only absolute URLs are supported");if(!/^https?:$/.test(t.protocol))throw new TypeError("Only HTTP(S) protocols are supported");if(e.signal&&e.body instanceof m.default.Readable&&!Be)throw new Error("Cancellation of streamed requests with AbortSignal is not supported in node < 8");let o=null;if(e.body==null&&/^(POST|PUT)$/i.test(e.method)&&(o="0"),e.body!=null){let s=se(e);typeof s=="number"&&(o=String(s))}o&&r.set("Content-Length",o),r.has("User-Agent")||r.set("User-Agent","node-fetch/1.0 (+https://github.com/bitinn/node-fetch)"),e.compress&&!r.has("Accept-Encoding")&&r.set("Accept-Encoding","gzip,deflate");let n=e.agent;return typeof n=="function"&&(n=n(t)),!r.has("Connection")&&!n&&r.set("Connection","close"),Object.assign({},t,{method:e.method,headers:Ee(r),agent:n})}function H(e){Error.call(this,e),this.type="aborted",this.message=e,Error.captureStackTrace(this,this.constructor)}H.prototype=Object.create(Error.prototype);H.prototype.constructor=H;H.prototype.name="AbortError";var ue=m.default.PassThrough,Ae=I.default.resolve;function B(e,t){if(!B.Promise)throw new Error("native promise missing, set fetch.Promise to your favorite alternative");return d.Promise=B.Promise,new B.Promise(function(r,o){let n=new x(e,t),s=$e(n),l=(s.protocol==="https:"?ee.default:G.default).request,a=n.signal,i=null,f=function(){let E=new H("The user aborted a request.");o(E),n.body&&n.body instanceof m.default.Readable&&n.body.destroy(E),!(!i||!i.body)&&i.body.emit("error",E)};if(a&&a.aborted){f();return}let g=function(){f(),v()},z=l(s),q;a&&a.addEventListener("abort",g);function v(){z.abort(),a&&a.removeEventListener("abort",g),clearTimeout(q)}n.timeout&&z.once("socket",function(c){q=setTimeout(function(){o(new h(`network timeout at: ${n.url}`,"request-timeout")),v()},n.timeout)}),z.on("error",function(c){o(new h(`request to ${n.url} failed, reason: ${c.message}`,"system",c)),v()}),z.on("response",function(c){clearTimeout(q);let E=Oe(c.headers);if(B.isRedirect(c.statusCode)){let D=E.get("Location"),L=D===null?null:Ae(n.url,D);switch(n.redirect){case"error":o(new h(`uri requested responds with a redirect, redirect mode is set to error: ${n.url}`,"no-redirect")),v();return;case"manual":if(L!==null)try{E.set("Location",L)}catch(ce){o(ce)}break;case"follow":if(L===null)break;if(n.counter>=n.follow){o(new h(`maximum redirect reached at: ${n.url}`,"max-redirect")),v();return}let N={headers:new y(n.headers),follow:n.follow,counter:n.counter+1,agent:n.agent,compress:n.compress,method:n.method,body:n.body,signal:n.signal,timeout:n.timeout,size:n.size};if(c.statusCode!==303&&n.body&&se(n)===null){o(new h("Cannot follow redirect with body being a readable stream","unsupported-redirect")),v();return}(c.statusCode===303||(c.statusCode===301||c.statusCode===302)&&n.method==="POST")&&(N.method="GET",N.body=void 0,N.headers.delete("content-length")),r(B(new x(L,N))),v();return}}c.once("end",function(){a&&a.removeEventListener("abort",g)});let p=c.pipe(new ue),k={url:n.url,status:c.statusCode,statusText:c.statusMessage,headers:E,size:n.size,timeout:n.timeout,counter:n.counter},A=E.get("Content-Encoding");if(!n.compress||n.method==="HEAD"||A===null||c.statusCode===204||c.statusCode===304){i=new b(p,k),r(i);return}let fe={flush:O.default.Z_SYNC_FLUSH,finishFlush:O.default.Z_SYNC_FLUSH};if(A=="gzip"||A=="x-gzip"){p=p.pipe(O.default.createGunzip(fe)),i=new b(p,k),r(i);return}if(A=="deflate"||A=="x-deflate"){c.pipe(new ue).once("data",function(L){(L[0]&15)==8?p=p.pipe(O.default.createInflate()):p=p.pipe(O.default.createInflateRaw()),i=new b(p,k),r(i)});return}if(A=="br"&&typeof O.default.createBrotliDecompress=="function"){p=p.pipe(O.default.createBrotliDecompress()),i=new b(p,k),r(i);return}i=new b(p,k),r(i)}),Se(z,n)})}B.isRedirect=function(e){return e===301||e===302||e===303||e===307||e===308};B.Promise=global.Promise;var le=B;var Le=e=>async t=>{let r={method:"POST",headers:{"Content-Type":"application/json",Authorization:`Bearer ${process.env.GRAPHQL_SECRET}`},body:JSON.stringify({query:t})};return await(await le(e,r)).json()},Ce=e=>`mutation {
+var __create = Object.create;
+var __defProp = Object.defineProperty;
+var __getProtoOf = Object.getPrototypeOf;
+var __hasOwnProp = Object.prototype.hasOwnProperty;
+var __getOwnPropNames = Object.getOwnPropertyNames;
+var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
+var __markAsModule = (target) => __defProp(target, "__esModule", {value: true});
+var __commonJS = (callback, module2) => () => {
+  if (!module2) {
+    module2 = {exports: {}};
+    callback(module2.exports, module2);
+  }
+  return module2.exports;
+};
+var __exportStar = (target, module2, desc) => {
+  if (module2 && typeof module2 === "object" || typeof module2 === "function") {
+    for (let key of __getOwnPropNames(module2))
+      if (!__hasOwnProp.call(target, key) && key !== "default")
+        __defProp(target, key, {get: () => module2[key], enumerable: !(desc = __getOwnPropDesc(module2, key)) || desc.enumerable});
+  }
+  return target;
+};
+var __toModule = (module2) => {
+  if (module2 && module2.__esModule)
+    return module2;
+  return __exportStar(__markAsModule(__defProp(module2 != null ? __create(__getProtoOf(module2)) : {}, "default", {value: module2, enumerable: true})), module2);
+};
+
+// node_modules/data-uri-to-buffer/dist/src/index.js
+var require_src = __commonJS((exports2, module2) => {
+  "use strict";
+  function dataUriToBuffer(uri) {
+    if (!/^data:/i.test(uri)) {
+      throw new TypeError('`uri` does not appear to be a Data URI (must begin with "data:")');
+    }
+    uri = uri.replace(/\r?\n/g, "");
+    const firstComma = uri.indexOf(",");
+    if (firstComma === -1 || firstComma <= 4) {
+      throw new TypeError("malformed data: URI");
+    }
+    const meta = uri.substring(5, firstComma).split(";");
+    let charset = "";
+    let base64 = false;
+    const type = meta[0] || "text/plain";
+    let typeFull = type;
+    for (let i = 1; i < meta.length; i++) {
+      if (meta[i] === "base64") {
+        base64 = true;
+      } else {
+        typeFull += `;${meta[i]}`;
+        if (meta[i].indexOf("charset=") === 0) {
+          charset = meta[i].substring(8);
+        }
+      }
+    }
+    if (!meta[0] && !charset.length) {
+      typeFull += ";charset=US-ASCII";
+      charset = "US-ASCII";
+    }
+    const encoding = base64 ? "base64" : "ascii";
+    const data = unescape(uri.substring(firstComma + 1));
+    const buffer = Buffer.from(data, encoding);
+    buffer.type = type;
+    buffer.typeFull = typeFull;
+    buffer.charset = charset;
+    return buffer;
+  }
+  module2.exports = dataUriToBuffer;
+});
+
+// node_modules/fetch-blob/index.js
+var require_fetch_blob = __commonJS((exports2, module2) => {
+  var {Readable} = require("stream");
+  var wm = new WeakMap();
+  async function* read(parts) {
+    for (const part of parts) {
+      if ("stream" in part) {
+        yield* part.stream();
+      } else {
+        yield part;
+      }
+    }
+  }
+  var Blob = class {
+    constructor(blobParts = [], options = {type: ""}) {
+      let size = 0;
+      const parts = blobParts.map((element) => {
+        let buffer;
+        if (element instanceof Buffer) {
+          buffer = element;
+        } else if (ArrayBuffer.isView(element)) {
+          buffer = Buffer.from(element.buffer, element.byteOffset, element.byteLength);
+        } else if (element instanceof ArrayBuffer) {
+          buffer = Buffer.from(element);
+        } else if (element instanceof Blob) {
+          buffer = element;
+        } else {
+          buffer = Buffer.from(typeof element === "string" ? element : String(element));
+        }
+        size += buffer.length || buffer.size || 0;
+        return buffer;
+      });
+      const type = options.type === void 0 ? "" : String(options.type).toLowerCase();
+      wm.set(this, {
+        type: /[^\u0020-\u007E]/.test(type) ? "" : type,
+        size,
+        parts
+      });
+    }
+    get size() {
+      return wm.get(this).size;
+    }
+    get type() {
+      return wm.get(this).type;
+    }
+    async text() {
+      return Buffer.from(await this.arrayBuffer()).toString();
+    }
+    async arrayBuffer() {
+      const data = new Uint8Array(this.size);
+      let offset = 0;
+      for await (const chunk of this.stream()) {
+        data.set(chunk, offset);
+        offset += chunk.length;
+      }
+      return data.buffer;
+    }
+    stream() {
+      return Readable.from(read(wm.get(this).parts));
+    }
+    slice(start = 0, end = this.size, type = "") {
+      const {size} = this;
+      let relativeStart = start < 0 ? Math.max(size + start, 0) : Math.min(start, size);
+      let relativeEnd = end < 0 ? Math.max(size + end, 0) : Math.min(end, size);
+      const span = Math.max(relativeEnd - relativeStart, 0);
+      const parts = wm.get(this).parts.values();
+      const blobParts = [];
+      let added = 0;
+      for (const part of parts) {
+        const size2 = ArrayBuffer.isView(part) ? part.byteLength : part.size;
+        if (relativeStart && size2 <= relativeStart) {
+          relativeStart -= size2;
+          relativeEnd -= size2;
+        } else {
+          const chunk = part.slice(relativeStart, Math.min(size2, relativeEnd));
+          blobParts.push(chunk);
+          added += ArrayBuffer.isView(chunk) ? chunk.byteLength : chunk.size;
+          relativeStart = 0;
+          if (added >= span) {
+            break;
+          }
+        }
+      }
+      const blob = new Blob([], {type});
+      Object.assign(wm.get(blob), {size: span, parts: blobParts});
+      return blob;
+    }
+    get [Symbol.toStringTag]() {
+      return "Blob";
+    }
+    static [Symbol.hasInstance](object) {
+      return typeof object === "object" && typeof object.stream === "function" && object.stream.length === 0 && typeof object.constructor === "function" && /^(Blob|File)$/.test(object[Symbol.toStringTag]);
+    }
+  };
+  Object.defineProperties(Blob.prototype, {
+    size: {enumerable: true},
+    type: {enumerable: true},
+    slice: {enumerable: true}
+  });
+  module2.exports = Blob;
+});
+
+// node_modules/node-fetch/dist/index.cjs
+var require_dist = __commonJS((exports2, module2) => {
+  "use strict";
+  exports2 = module2.exports = fetch2;
+  var http = require("http");
+  var https = require("https");
+  var zlib = require("zlib");
+  var Stream = require("stream");
+  var dataUriToBuffer = require_src();
+  var util = require("util");
+  var Blob = require_fetch_blob();
+  var crypto = require("crypto");
+  var url = require("url");
+  var FetchBaseError = class extends Error {
+    constructor(message, type) {
+      super(message);
+      Error.captureStackTrace(this, this.constructor);
+      this.type = type;
+    }
+    get name() {
+      return this.constructor.name;
+    }
+    get [Symbol.toStringTag]() {
+      return this.constructor.name;
+    }
+  };
+  var FetchError = class extends FetchBaseError {
+    constructor(message, type, systemError) {
+      super(message, type);
+      if (systemError) {
+        this.code = this.errno = systemError.code;
+        this.erroredSysCall = systemError.syscall;
+      }
+    }
+  };
+  var NAME = Symbol.toStringTag;
+  var isURLSearchParameters = (object) => {
+    return typeof object === "object" && typeof object.append === "function" && typeof object.delete === "function" && typeof object.get === "function" && typeof object.getAll === "function" && typeof object.has === "function" && typeof object.set === "function" && typeof object.sort === "function" && object[NAME] === "URLSearchParams";
+  };
+  var isBlob = (object) => {
+    return typeof object === "object" && typeof object.arrayBuffer === "function" && typeof object.type === "string" && typeof object.stream === "function" && typeof object.constructor === "function" && /^(Blob|File)$/.test(object[NAME]);
+  };
+  function isFormData(object) {
+    return typeof object === "object" && typeof object.append === "function" && typeof object.set === "function" && typeof object.get === "function" && typeof object.getAll === "function" && typeof object.delete === "function" && typeof object.keys === "function" && typeof object.values === "function" && typeof object.entries === "function" && typeof object.constructor === "function" && object[NAME] === "FormData";
+  }
+  var isAbortSignal = (object) => {
+    return typeof object === "object" && object[NAME] === "AbortSignal";
+  };
+  var carriage = "\r\n";
+  var dashes = "-".repeat(2);
+  var carriageLength = Buffer.byteLength(carriage);
+  var getFooter = (boundary) => `${dashes}${boundary}${dashes}${carriage.repeat(2)}`;
+  function getHeader(boundary, name, field) {
+    let header = "";
+    header += `${dashes}${boundary}${carriage}`;
+    header += `Content-Disposition: form-data; name="${name}"`;
+    if (isBlob(field)) {
+      header += `; filename="${field.name}"${carriage}`;
+      header += `Content-Type: ${field.type || "application/octet-stream"}`;
+    }
+    return `${header}${carriage.repeat(2)}`;
+  }
+  var getBoundary = () => crypto.randomBytes(8).toString("hex");
+  async function* formDataIterator(form, boundary) {
+    for (const [name, value] of form) {
+      yield getHeader(boundary, name, value);
+      if (isBlob(value)) {
+        yield* value.stream();
+      } else {
+        yield value;
+      }
+      yield carriage;
+    }
+    yield getFooter(boundary);
+  }
+  function getFormDataLength(form, boundary) {
+    let length = 0;
+    for (const [name, value] of form) {
+      length += Buffer.byteLength(getHeader(boundary, name, value));
+      if (isBlob(value)) {
+        length += value.size;
+      } else {
+        length += Buffer.byteLength(String(value));
+      }
+      length += carriageLength;
+    }
+    length += Buffer.byteLength(getFooter(boundary));
+    return length;
+  }
+  var INTERNALS = Symbol("Body internals");
+  var Body = class {
+    constructor(body, {
+      size = 0
+    } = {}) {
+      let boundary = null;
+      if (body === null) {
+        body = null;
+      } else if (isURLSearchParameters(body)) {
+        body = Buffer.from(body.toString());
+      } else if (isBlob(body))
+        ;
+      else if (Buffer.isBuffer(body))
+        ;
+      else if (util.types.isAnyArrayBuffer(body)) {
+        body = Buffer.from(body);
+      } else if (ArrayBuffer.isView(body)) {
+        body = Buffer.from(body.buffer, body.byteOffset, body.byteLength);
+      } else if (body instanceof Stream)
+        ;
+      else if (isFormData(body)) {
+        boundary = `NodeFetchFormDataBoundary${getBoundary()}`;
+        body = Stream.Readable.from(formDataIterator(body, boundary));
+      } else {
+        body = Buffer.from(String(body));
+      }
+      this[INTERNALS] = {
+        body,
+        boundary,
+        disturbed: false,
+        error: null
+      };
+      this.size = size;
+      if (body instanceof Stream) {
+        body.on("error", (err) => {
+          const error = err instanceof FetchBaseError ? err : new FetchError(`Invalid response body while trying to fetch ${this.url}: ${err.message}`, "system", err);
+          this[INTERNALS].error = error;
+        });
+      }
+    }
+    get body() {
+      return this[INTERNALS].body;
+    }
+    get bodyUsed() {
+      return this[INTERNALS].disturbed;
+    }
+    async arrayBuffer() {
+      const {buffer, byteOffset, byteLength} = await consumeBody(this);
+      return buffer.slice(byteOffset, byteOffset + byteLength);
+    }
+    async blob() {
+      const ct = this.headers && this.headers.get("content-type") || this[INTERNALS].body && this[INTERNALS].body.type || "";
+      const buf = await this.buffer();
+      return new Blob([buf], {
+        type: ct
+      });
+    }
+    async json() {
+      const buffer = await consumeBody(this);
+      return JSON.parse(buffer.toString());
+    }
+    async text() {
+      const buffer = await consumeBody(this);
+      return buffer.toString();
+    }
+    buffer() {
+      return consumeBody(this);
+    }
+  };
+  Object.defineProperties(Body.prototype, {
+    body: {enumerable: true},
+    bodyUsed: {enumerable: true},
+    arrayBuffer: {enumerable: true},
+    blob: {enumerable: true},
+    json: {enumerable: true},
+    text: {enumerable: true}
+  });
+  async function consumeBody(data) {
+    if (data[INTERNALS].disturbed) {
+      throw new TypeError(`body used already for: ${data.url}`);
+    }
+    data[INTERNALS].disturbed = true;
+    if (data[INTERNALS].error) {
+      throw data[INTERNALS].error;
+    }
+    let {body} = data;
+    if (body === null) {
+      return Buffer.alloc(0);
+    }
+    if (isBlob(body)) {
+      body = body.stream();
+    }
+    if (Buffer.isBuffer(body)) {
+      return body;
+    }
+    if (!(body instanceof Stream)) {
+      return Buffer.alloc(0);
+    }
+    const accum = [];
+    let accumBytes = 0;
+    try {
+      for await (const chunk of body) {
+        if (data.size > 0 && accumBytes + chunk.length > data.size) {
+          const err = new FetchError(`content size at ${data.url} over limit: ${data.size}`, "max-size");
+          body.destroy(err);
+          throw err;
+        }
+        accumBytes += chunk.length;
+        accum.push(chunk);
+      }
+    } catch (error) {
+      if (error instanceof FetchBaseError) {
+        throw error;
+      } else {
+        throw new FetchError(`Invalid response body while trying to fetch ${data.url}: ${error.message}`, "system", error);
+      }
+    }
+    if (body.readableEnded === true || body._readableState.ended === true) {
+      try {
+        if (accum.every((c) => typeof c === "string")) {
+          return Buffer.from(accum.join(""));
+        }
+        return Buffer.concat(accum, accumBytes);
+      } catch (error) {
+        throw new FetchError(`Could not create Buffer from response body for ${data.url}: ${error.message}`, "system", error);
+      }
+    } else {
+      throw new FetchError(`Premature close of server response while trying to fetch ${data.url}`);
+    }
+  }
+  var clone = (instance, highWaterMark) => {
+    let p1;
+    let p2;
+    let {body} = instance;
+    if (instance.bodyUsed) {
+      throw new Error("cannot clone body after it is used");
+    }
+    if (body instanceof Stream && typeof body.getBoundary !== "function") {
+      p1 = new Stream.PassThrough({highWaterMark});
+      p2 = new Stream.PassThrough({highWaterMark});
+      body.pipe(p1);
+      body.pipe(p2);
+      instance[INTERNALS].body = p1;
+      body = p2;
+    }
+    return body;
+  };
+  var extractContentType = (body, request) => {
+    if (body === null) {
+      return null;
+    }
+    if (typeof body === "string") {
+      return "text/plain;charset=UTF-8";
+    }
+    if (isURLSearchParameters(body)) {
+      return "application/x-www-form-urlencoded;charset=UTF-8";
+    }
+    if (isBlob(body)) {
+      return body.type || null;
+    }
+    if (Buffer.isBuffer(body) || util.types.isAnyArrayBuffer(body) || ArrayBuffer.isView(body)) {
+      return null;
+    }
+    if (body && typeof body.getBoundary === "function") {
+      return `multipart/form-data;boundary=${body.getBoundary()}`;
+    }
+    if (isFormData(body)) {
+      return `multipart/form-data; boundary=${request[INTERNALS].boundary}`;
+    }
+    if (body instanceof Stream) {
+      return null;
+    }
+    return "text/plain;charset=UTF-8";
+  };
+  var getTotalBytes = (request) => {
+    const {body} = request;
+    if (body === null) {
+      return 0;
+    }
+    if (isBlob(body)) {
+      return body.size;
+    }
+    if (Buffer.isBuffer(body)) {
+      return body.length;
+    }
+    if (body && typeof body.getLengthSync === "function") {
+      return body.hasKnownLength && body.hasKnownLength() ? body.getLengthSync() : null;
+    }
+    if (isFormData(body)) {
+      return getFormDataLength(request[INTERNALS].boundary);
+    }
+    return null;
+  };
+  var writeToStream = (dest, {body}) => {
+    if (body === null) {
+      dest.end();
+    } else if (isBlob(body)) {
+      body.stream().pipe(dest);
+    } else if (Buffer.isBuffer(body)) {
+      dest.write(body);
+      dest.end();
+    } else {
+      body.pipe(dest);
+    }
+  };
+  var validateHeaderName = typeof http.validateHeaderName === "function" ? http.validateHeaderName : (name) => {
+    if (!/^[\^`\-\w!#$%&'*+.|~]+$/.test(name)) {
+      const err = new TypeError(`Header name must be a valid HTTP token [${name}]`);
+      Object.defineProperty(err, "code", {value: "ERR_INVALID_HTTP_TOKEN"});
+      throw err;
+    }
+  };
+  var validateHeaderValue = typeof http.validateHeaderValue === "function" ? http.validateHeaderValue : (name, value) => {
+    if (/[^\t\u0020-\u007E\u0080-\u00FF]/.test(value)) {
+      const err = new TypeError(`Invalid character in header content ["${name}"]`);
+      Object.defineProperty(err, "code", {value: "ERR_INVALID_CHAR"});
+      throw err;
+    }
+  };
+  var Headers = class extends URLSearchParams {
+    constructor(init) {
+      let result = [];
+      if (init instanceof Headers) {
+        const raw = init.raw();
+        for (const [name, values] of Object.entries(raw)) {
+          result.push(...values.map((value) => [name, value]));
+        }
+      } else if (init == null)
+        ;
+      else if (typeof init === "object" && !util.types.isBoxedPrimitive(init)) {
+        const method = init[Symbol.iterator];
+        if (method == null) {
+          result.push(...Object.entries(init));
+        } else {
+          if (typeof method !== "function") {
+            throw new TypeError("Header pairs must be iterable");
+          }
+          result = [...init].map((pair) => {
+            if (typeof pair !== "object" || util.types.isBoxedPrimitive(pair)) {
+              throw new TypeError("Each header pair must be an iterable object");
+            }
+            return [...pair];
+          }).map((pair) => {
+            if (pair.length !== 2) {
+              throw new TypeError("Each header pair must be a name/value tuple");
+            }
+            return [...pair];
+          });
+        }
+      } else {
+        throw new TypeError("Failed to construct 'Headers': The provided value is not of type '(sequence<sequence<ByteString>> or record<ByteString, ByteString>)");
+      }
+      result = result.length > 0 ? result.map(([name, value]) => {
+        validateHeaderName(name);
+        validateHeaderValue(name, String(value));
+        return [String(name).toLowerCase(), String(value)];
+      }) : void 0;
+      super(result);
+      return new Proxy(this, {
+        get(target, p, receiver) {
+          switch (p) {
+            case "append":
+            case "set":
+              return (name, value) => {
+                validateHeaderName(name);
+                validateHeaderValue(name, String(value));
+                return URLSearchParams.prototype[p].call(receiver, String(name).toLowerCase(), String(value));
+              };
+            case "delete":
+            case "has":
+            case "getAll":
+              return (name) => {
+                validateHeaderName(name);
+                return URLSearchParams.prototype[p].call(receiver, String(name).toLowerCase());
+              };
+            case "keys":
+              return () => {
+                target.sort();
+                return new Set(URLSearchParams.prototype.keys.call(target)).keys();
+              };
+            default:
+              return Reflect.get(target, p, receiver);
+          }
+        }
+      });
+    }
+    get [Symbol.toStringTag]() {
+      return this.constructor.name;
+    }
+    toString() {
+      return Object.prototype.toString.call(this);
+    }
+    get(name) {
+      const values = this.getAll(name);
+      if (values.length === 0) {
+        return null;
+      }
+      let value = values.join(", ");
+      if (/^content-encoding$/i.test(name)) {
+        value = value.toLowerCase();
+      }
+      return value;
+    }
+    forEach(callback) {
+      for (const name of this.keys()) {
+        callback(this.get(name), name);
+      }
+    }
+    *values() {
+      for (const name of this.keys()) {
+        yield this.get(name);
+      }
+    }
+    *entries() {
+      for (const name of this.keys()) {
+        yield [name, this.get(name)];
+      }
+    }
+    [Symbol.iterator]() {
+      return this.entries();
+    }
+    raw() {
+      return [...this.keys()].reduce((result, key) => {
+        result[key] = this.getAll(key);
+        return result;
+      }, {});
+    }
+    [Symbol.for("nodejs.util.inspect.custom")]() {
+      return [...this.keys()].reduce((result, key) => {
+        const values = this.getAll(key);
+        if (key === "host") {
+          result[key] = values[0];
+        } else {
+          result[key] = values.length > 1 ? values : values[0];
+        }
+        return result;
+      }, {});
+    }
+  };
+  Object.defineProperties(Headers.prototype, ["get", "entries", "forEach", "values"].reduce((result, property) => {
+    result[property] = {enumerable: true};
+    return result;
+  }, {}));
+  function fromRawHeaders(headers = []) {
+    return new Headers(headers.reduce((result, value, index, array) => {
+      if (index % 2 === 0) {
+        result.push(array.slice(index, index + 2));
+      }
+      return result;
+    }, []).filter(([name, value]) => {
+      try {
+        validateHeaderName(name);
+        validateHeaderValue(name, String(value));
+        return true;
+      } catch {
+        return false;
+      }
+    }));
+  }
+  var redirectStatus = new Set([301, 302, 303, 307, 308]);
+  var isRedirect = (code) => {
+    return redirectStatus.has(code);
+  };
+  var INTERNALS$1 = Symbol("Response internals");
+  var Response = class extends Body {
+    constructor(body = null, options = {}) {
+      super(body, options);
+      const status = options.status || 200;
+      const headers = new Headers(options.headers);
+      if (body !== null && !headers.has("Content-Type")) {
+        const contentType = extractContentType(body);
+        if (contentType) {
+          headers.append("Content-Type", contentType);
+        }
+      }
+      this[INTERNALS$1] = {
+        url: options.url,
+        status,
+        statusText: options.statusText || "",
+        headers,
+        counter: options.counter,
+        highWaterMark: options.highWaterMark
+      };
+    }
+    get url() {
+      return this[INTERNALS$1].url || "";
+    }
+    get status() {
+      return this[INTERNALS$1].status;
+    }
+    get ok() {
+      return this[INTERNALS$1].status >= 200 && this[INTERNALS$1].status < 300;
+    }
+    get redirected() {
+      return this[INTERNALS$1].counter > 0;
+    }
+    get statusText() {
+      return this[INTERNALS$1].statusText;
+    }
+    get headers() {
+      return this[INTERNALS$1].headers;
+    }
+    get highWaterMark() {
+      return this[INTERNALS$1].highWaterMark;
+    }
+    clone() {
+      return new Response(clone(this, this.highWaterMark), {
+        url: this.url,
+        status: this.status,
+        statusText: this.statusText,
+        headers: this.headers,
+        ok: this.ok,
+        redirected: this.redirected,
+        size: this.size
+      });
+    }
+    static redirect(url2, status = 302) {
+      if (!isRedirect(status)) {
+        throw new RangeError('Failed to execute "redirect" on "response": Invalid status code');
+      }
+      return new Response(null, {
+        headers: {
+          location: new URL(url2).toString()
+        },
+        status
+      });
+    }
+    get [Symbol.toStringTag]() {
+      return "Response";
+    }
+  };
+  Object.defineProperties(Response.prototype, {
+    url: {enumerable: true},
+    status: {enumerable: true},
+    ok: {enumerable: true},
+    redirected: {enumerable: true},
+    statusText: {enumerable: true},
+    headers: {enumerable: true},
+    clone: {enumerable: true}
+  });
+  var getSearch = (parsedURL) => {
+    if (parsedURL.search) {
+      return parsedURL.search;
+    }
+    const lastOffset = parsedURL.href.length - 1;
+    const hash = parsedURL.hash || (parsedURL.href[lastOffset] === "#" ? "#" : "");
+    return parsedURL.href[lastOffset - hash.length] === "?" ? "?" : "";
+  };
+  var INTERNALS$2 = Symbol("Request internals");
+  var isRequest = (object) => {
+    return typeof object === "object" && typeof object[INTERNALS$2] === "object";
+  };
+  var Request = class extends Body {
+    constructor(input, init = {}) {
+      let parsedURL;
+      if (isRequest(input)) {
+        parsedURL = new URL(input.url);
+      } else {
+        parsedURL = new URL(input);
+        input = {};
+      }
+      let method = init.method || input.method || "GET";
+      method = method.toUpperCase();
+      if ((init.body != null || isRequest(input)) && input.body !== null && (method === "GET" || method === "HEAD")) {
+        throw new TypeError("Request with GET/HEAD method cannot have body");
+      }
+      const inputBody = init.body ? init.body : isRequest(input) && input.body !== null ? clone(input) : null;
+      super(inputBody, {
+        size: init.size || input.size || 0
+      });
+      const headers = new Headers(init.headers || input.headers || {});
+      if (inputBody !== null && !headers.has("Content-Type")) {
+        const contentType = extractContentType(inputBody, this);
+        if (contentType) {
+          headers.append("Content-Type", contentType);
+        }
+      }
+      let signal = isRequest(input) ? input.signal : null;
+      if ("signal" in init) {
+        signal = init.signal;
+      }
+      if (signal !== null && !isAbortSignal(signal)) {
+        throw new TypeError("Expected signal to be an instanceof AbortSignal");
+      }
+      this[INTERNALS$2] = {
+        method,
+        redirect: init.redirect || input.redirect || "follow",
+        headers,
+        parsedURL,
+        signal
+      };
+      this.follow = init.follow === void 0 ? input.follow === void 0 ? 20 : input.follow : init.follow;
+      this.compress = init.compress === void 0 ? input.compress === void 0 ? true : input.compress : init.compress;
+      this.counter = init.counter || input.counter || 0;
+      this.agent = init.agent || input.agent;
+      this.highWaterMark = init.highWaterMark || input.highWaterMark || 16384;
+      this.insecureHTTPParser = init.insecureHTTPParser || input.insecureHTTPParser || false;
+    }
+    get method() {
+      return this[INTERNALS$2].method;
+    }
+    get url() {
+      return url.format(this[INTERNALS$2].parsedURL);
+    }
+    get headers() {
+      return this[INTERNALS$2].headers;
+    }
+    get redirect() {
+      return this[INTERNALS$2].redirect;
+    }
+    get signal() {
+      return this[INTERNALS$2].signal;
+    }
+    clone() {
+      return new Request(this);
+    }
+    get [Symbol.toStringTag]() {
+      return "Request";
+    }
+  };
+  Object.defineProperties(Request.prototype, {
+    method: {enumerable: true},
+    url: {enumerable: true},
+    headers: {enumerable: true},
+    redirect: {enumerable: true},
+    clone: {enumerable: true},
+    signal: {enumerable: true}
+  });
+  var getNodeRequestOptions = (request) => {
+    const {parsedURL} = request[INTERNALS$2];
+    const headers = new Headers(request[INTERNALS$2].headers);
+    if (!headers.has("Accept")) {
+      headers.set("Accept", "*/*");
+    }
+    let contentLengthValue = null;
+    if (request.body === null && /^(post|put)$/i.test(request.method)) {
+      contentLengthValue = "0";
+    }
+    if (request.body !== null) {
+      const totalBytes = getTotalBytes(request);
+      if (typeof totalBytes === "number" && !Number.isNaN(totalBytes)) {
+        contentLengthValue = String(totalBytes);
+      }
+    }
+    if (contentLengthValue) {
+      headers.set("Content-Length", contentLengthValue);
+    }
+    if (!headers.has("User-Agent")) {
+      headers.set("User-Agent", "node-fetch");
+    }
+    if (request.compress && !headers.has("Accept-Encoding")) {
+      headers.set("Accept-Encoding", "gzip,deflate,br");
+    }
+    let {agent} = request;
+    if (typeof agent === "function") {
+      agent = agent(parsedURL);
+    }
+    if (!headers.has("Connection") && !agent) {
+      headers.set("Connection", "close");
+    }
+    const search = getSearch(parsedURL);
+    const requestOptions = {
+      path: parsedURL.pathname + search,
+      pathname: parsedURL.pathname,
+      hostname: parsedURL.hostname,
+      protocol: parsedURL.protocol,
+      port: parsedURL.port,
+      hash: parsedURL.hash,
+      search: parsedURL.search,
+      query: parsedURL.query,
+      href: parsedURL.href,
+      method: request.method,
+      headers: headers[Symbol.for("nodejs.util.inspect.custom")](),
+      insecureHTTPParser: request.insecureHTTPParser,
+      agent
+    };
+    return requestOptions;
+  };
+  var AbortError = class extends FetchBaseError {
+    constructor(message, type = "aborted") {
+      super(message, type);
+    }
+  };
+  var supportedSchemas = new Set(["data:", "http:", "https:"]);
+  async function fetch2(url2, options_) {
+    return new Promise((resolve, reject) => {
+      const request = new Request(url2, options_);
+      const options = getNodeRequestOptions(request);
+      if (!supportedSchemas.has(options.protocol)) {
+        throw new TypeError(`node-fetch cannot load ${url2}. URL scheme "${options.protocol.replace(/:$/, "")}" is not supported.`);
+      }
+      if (options.protocol === "data:") {
+        const data = dataUriToBuffer(request.url);
+        const response2 = new Response(data, {headers: {"Content-Type": data.typeFull}});
+        resolve(response2);
+        return;
+      }
+      const send = (options.protocol === "https:" ? https : http).request;
+      const {signal} = request;
+      let response = null;
+      const abort = () => {
+        const error = new AbortError("The operation was aborted.");
+        reject(error);
+        if (request.body && request.body instanceof Stream.Readable) {
+          request.body.destroy(error);
+        }
+        if (!response || !response.body) {
+          return;
+        }
+        response.body.emit("error", error);
+      };
+      if (signal && signal.aborted) {
+        abort();
+        return;
+      }
+      const abortAndFinalize = () => {
+        abort();
+        finalize();
+      };
+      const request_ = send(options);
+      if (signal) {
+        signal.addEventListener("abort", abortAndFinalize);
+      }
+      const finalize = () => {
+        request_.abort();
+        if (signal) {
+          signal.removeEventListener("abort", abortAndFinalize);
+        }
+      };
+      request_.on("error", (err) => {
+        reject(new FetchError(`request to ${request.url} failed, reason: ${err.message}`, "system", err));
+        finalize();
+      });
+      request_.on("response", (response_) => {
+        request_.setTimeout(0);
+        const headers = fromRawHeaders(response_.rawHeaders);
+        if (isRedirect(response_.statusCode)) {
+          const location = headers.get("Location");
+          const locationURL = location === null ? null : new URL(location, request.url);
+          switch (request.redirect) {
+            case "error":
+              reject(new FetchError(`uri requested responds with a redirect, redirect mode is set to error: ${request.url}`, "no-redirect"));
+              finalize();
+              return;
+            case "manual":
+              if (locationURL !== null) {
+                try {
+                  headers.set("Location", locationURL);
+                } catch (error) {
+                  reject(error);
+                }
+              }
+              break;
+            case "follow": {
+              if (locationURL === null) {
+                break;
+              }
+              if (request.counter >= request.follow) {
+                reject(new FetchError(`maximum redirect reached at: ${request.url}`, "max-redirect"));
+                finalize();
+                return;
+              }
+              const requestOptions = {
+                headers: new Headers(request.headers),
+                follow: request.follow,
+                counter: request.counter + 1,
+                agent: request.agent,
+                compress: request.compress,
+                method: request.method,
+                body: request.body,
+                signal: request.signal,
+                size: request.size
+              };
+              if (response_.statusCode !== 303 && request.body && options_.body instanceof Stream.Readable) {
+                reject(new FetchError("Cannot follow redirect with body being a readable stream", "unsupported-redirect"));
+                finalize();
+                return;
+              }
+              if (response_.statusCode === 303 || (response_.statusCode === 301 || response_.statusCode === 302) && request.method === "POST") {
+                requestOptions.method = "GET";
+                requestOptions.body = void 0;
+                requestOptions.headers.delete("content-length");
+              }
+              resolve(fetch2(new Request(locationURL, requestOptions)));
+              finalize();
+              return;
+            }
+          }
+        }
+        response_.once("end", () => {
+          if (signal) {
+            signal.removeEventListener("abort", abortAndFinalize);
+          }
+        });
+        let body = Stream.pipeline(response_, new Stream.PassThrough(), (error) => {
+          reject(error);
+        });
+        if (process.version < "v12.10") {
+          response_.on("aborted", abortAndFinalize);
+        }
+        const responseOptions = {
+          url: request.url,
+          status: response_.statusCode,
+          statusText: response_.statusMessage,
+          headers,
+          size: request.size,
+          counter: request.counter,
+          highWaterMark: request.highWaterMark
+        };
+        const codings = headers.get("Content-Encoding");
+        if (!request.compress || request.method === "HEAD" || codings === null || response_.statusCode === 204 || response_.statusCode === 304) {
+          response = new Response(body, responseOptions);
+          resolve(response);
+          return;
+        }
+        const zlibOptions = {
+          flush: zlib.Z_SYNC_FLUSH,
+          finishFlush: zlib.Z_SYNC_FLUSH
+        };
+        if (codings === "gzip" || codings === "x-gzip") {
+          body = Stream.pipeline(body, zlib.createGunzip(zlibOptions), (error) => {
+            reject(error);
+          });
+          response = new Response(body, responseOptions);
+          resolve(response);
+          return;
+        }
+        if (codings === "deflate" || codings === "x-deflate") {
+          const raw = Stream.pipeline(response_, new Stream.PassThrough(), (error) => {
+            reject(error);
+          });
+          raw.once("data", (chunk) => {
+            if ((chunk[0] & 15) === 8) {
+              body = Stream.pipeline(body, zlib.createInflate(), (error) => {
+                reject(error);
+              });
+            } else {
+              body = Stream.pipeline(body, zlib.createInflateRaw(), (error) => {
+                reject(error);
+              });
+            }
+            response = new Response(body, responseOptions);
+            resolve(response);
+          });
+          return;
+        }
+        if (codings === "br") {
+          body = Stream.pipeline(body, zlib.createBrotliDecompress(), (error) => {
+            reject(error);
+          });
+          response = new Response(body, responseOptions);
+          resolve(response);
+          return;
+        }
+        response = new Response(body, responseOptions);
+        resolve(response);
+      });
+      writeToStream(request_, request);
+    });
+  }
+  exports2.AbortError = AbortError;
+  exports2.FetchError = FetchError;
+  exports2.Headers = Headers;
+  exports2.Request = Request;
+  exports2.Response = Response;
+  exports2.default = fetch2;
+  exports2.isRedirect = isRedirect;
+});
+
+// lambda/tracker.ts
+var import_node_fetch = __toModule(require_dist());
+var gql = (url) => async (mutation) => {
+  const opts = {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${process.env.GRAPHQL_SECRET}`
+    },
+    body: JSON.stringify({query: mutation})
+  };
+  const res = await import_node_fetch.default(url, opts);
+  return await res.json();
+};
+var createVisit = (event) => `mutation {
   createVisit(data: {
-    ip: "${e.headers["client-ip"]}"
-    userAgent: "${e.headers["user-agent"]}",
+    ip: "${event.headers["client-ip"]}"
+    userAgent: "${event.headers["user-agent"]}",
     created: "${new Date().toISOString()}",
     account: {
-      connect: "${e.queryStringParameters.account}"
+      connect: "${event.queryStringParameters.account}"
     }
   }) {
    _id
  }
-}`;exports.handler=async e=>{let t=200,r=await Le(process.env.GRAPHQL_URL)(Ce(e));return console.log(r),{statusCode:t}};
+}`;
+exports.handler = async (event) => {
+  let statusCode = 200;
+  const res = await gql(process.env.GRAPHQL_URL)(createVisit(event));
+  console.log(res);
+  return {
+    statusCode
+  };
+};
