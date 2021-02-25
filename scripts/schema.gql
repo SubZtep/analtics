@@ -10,15 +10,3 @@ type Visit {
   created: Time!
   account: Account!
 }
-
-mutation {
-  createVisit(data: {
-    ip: "1.2.3.4"
-    userAgent: "Brovzer",
-    created: "2021-02-24T19:12:03Z",
-    account: {
-      connect: "291435445219230209"
-    }
-  }) {
-    _id
-  }
