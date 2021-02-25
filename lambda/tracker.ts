@@ -1,7 +1,7 @@
 import fetch from "node-fetch"
 
 const gql = (url, secret) => async mutation =>
-await fetch(url, {
+  await fetch(url, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -26,9 +26,19 @@ const createVisit = event => `mutation {
 }`
 
 exports.handler = async event => {
-  const res = await gql(process.env.GRAPHQL_URL, process.env.GRAPHQL_SECRET)(createVisit(event))
-  return {
-    statusCode: res.status,
-    body: res.ok ? "" : res.statusText,
+  const dbres = await gql(process.env.GRAPHQL_URL, process.env.GRAPHQL_SECRET)(createVisit(event))
+  const response: { [key: string]: any } = {
+    statusCode: dbres.status,
   }
+  if (dbres.ok) {
+    response.headers = {
+      headers: {
+        "Content-Type": event.queryStringParameters.noscript ? "text/css" : "text/javascript",
+        "X-Content-Type-Options": "nosniff"
+      },
+    }
+  } else {
+    response.body = dbres.statusText
+  }
+  return response
 }
