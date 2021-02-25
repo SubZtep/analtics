@@ -8,7 +8,7 @@ Analytics service that track and report website traffic to GraphQL. Keep it simp
 
 ## Setup
 
-[Netlify](https://www.netlify.com/) and [Fanua](https://fauna.com/) are interchangeable but untested. These are **free services** on the level of my current needs and easy to set up. Switching _serverless_ provider presumably requires redirect reconfiguration.
+[Netlify](https://www.netlify.com/) and [Fanua](https://fauna.com/) are interchangeable but untested. These are **free services** on the level of my current needs and easy to set up.
 
 ### Netlify
 

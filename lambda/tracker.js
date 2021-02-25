@@ -12,4 +12,4 @@ var ce=Object.create,V=Object.defineProperty,le=Object.getPrototypeOf,he=Object.
   }) {
    _id
   }
-}`;exports.handler=async t=>{let e=await qe(process.env.GRAPHQL_URL,process.env.GRAPHQL_SECRET)(Ie(t));return{statusCode:e.status,body:e.ok?t.queryStringParameters.noscript?"":await e.text():e.statusText}};
+}`;exports.handler=async t=>{let e=await qe(process.env.GRAPHQL_URL,process.env.GRAPHQL_SECRET)(Ie(t));return{statusCode:e.status,body:e.ok?"":e.statusText}};

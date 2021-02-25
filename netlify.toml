@@ -1,10 +1,2 @@
 [build]
   functions = "lambda"
-
-[[redirects]]
-  from = "/.netlify/functions/tracker.css"
-  to = "/.netlify/functions/tracker?noscript=true"
-  status = 200
-  force = true
-
-# TODO: pixel redirect

@@ -29,6 +29,6 @@ exports.handler = async event => {
   const res = await gql(process.env.GRAPHQL_URL, process.env.GRAPHQL_SECRET)(createVisit(event))
   return {
     statusCode: res.status,
-    body: res.ok ? (event.queryStringParameters.noscript ? "" : await res.text()) : res.statusText,
+    body: res.ok ? "" : res.statusText,
   }
 }
