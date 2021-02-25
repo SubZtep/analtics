@@ -1,4 +1,4 @@
-import { APIGatewayProxyEvent, APIGatewayProxyCallback } from "aws-lambda"
+// import { APIGatewayProxyEvent, APIGatewayProxyCallback } from "aws-lambda"
 import fetch from "node-fetch"
 
 const gql = (url, secret) => async mutation =>
@@ -33,8 +33,9 @@ exports.handler = async event => {
   if (dbres.ok) {
     response.headers = {
       "Content-Type": event.queryStringParameters.noscript ? "text/css" : "text/javascript",
-      "X-Content-Type-Options": "nosniff",
+      // "X-Content-Type-Options": "nosniff",
     }
+    response.body = ""
   } else {
     response.body = dbres.statusText
   }
