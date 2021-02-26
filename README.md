@@ -1,10 +1,10 @@
-# Analytics:godmode:
+# Analtics:godmode:
 
 Analytics service that track and report website traffic to GraphQL. Keep it simple.
 
 > :construction: On-Going
 >
-> [![Netlify Status](https://api.netlify.com/api/v1/badges/37c894b5-d9b9-4897-92cf-2cd8b3c5be74/deploy-status)](https://app.netlify.com/sites/analytics-lambda/deploys)
+> [![Netlify Status](https://api.netlify.com/api/v1/badges/37c894b5-d9b9-4897-92cf-2cd8b3c5be74/deploy-status)](https://app.netlify.com/sites/analtics/deploys)
 
 ## Setup
 
@@ -13,7 +13,7 @@ Analytics service that track and report website traffic to GraphQL. Keep it simp
 ### Netlify
 
 1. Deploy (functions)
-2. Add required [environment variables](https://app.netlify.com/sites/analytics-lambda/settings/deploys#environment)
+2. Add required [environment variables](https://app.netlify.com/sites/analtics/settings/deploys#environment)
 
    | Name           | Value                                                |
    | -------------- | ---------------------------------------------------- |
@@ -23,7 +23,7 @@ Analytics service that track and report website traffic to GraphQL. Keep it simp
 ### Fanua
 
 1. Setup database (help [here](https://www.netlify.com/blog/2018/07/09/building-serverless-crud-apps-with-netlify-functions-faunadb/#2-set-up-faunadb) and [here](https://github.com/netlify/netlify-faunadb-example#readme))
-2. Import schema from [`scripts/schema.gql`](https://github.com/SubZtep/analytics/blob/main/scripts/schema.gql)
+2. Import schema from [`scripts/schema.gql`](https://github.com/SubZtep/analtics/blob/main/scripts/schema.gql)
 3. Generate server key in _security_
 
 ### Account ID
@@ -44,7 +44,7 @@ Analytics service that track and report website traffic to GraphQL. Keep it simp
 
 | Variable    | Example                                                         |
 | ----------- | --------------------------------------------------------------- |
-| TRACKER_URL | https://analytics-lambda.netlify.app/.netlify/functions/tracker |
+| TRACKER_URL | https://analtics.netlify.app/.netlify/functions/tracker |
 | ACCOUNT_ID  | 234567890123456789                                              |
 
 1. To somewhere to the top of `head` tag
@@ -62,7 +62,7 @@ To generate tracking embeds.
 
 ### Vite
 
-[plugins/vite.js](https://github.com/SubZtep/analytics/blob/main/plugins/vite.js)
+[plugins/vite.js](https://github.com/SubZtep/analtics/blob/main/plugins/vite.js)
 
 ---
 

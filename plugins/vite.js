@@ -2,7 +2,7 @@
  * @param {{tracker: string, account: string, productionOnly?: boolean}} obj Plugin options
  */
 exports.default = ({ tracker, account, productionOnly }) => ({
-  name: "analytics",
+  name: "analtics",
   transformIndexHtml(html) {
     if (productionOnly && process.env.NODE_ENV === "development") {
       return html

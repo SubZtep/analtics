@@ -1,15 +1,14 @@
 {
-  "name": "analytics",
+  "name": "analtics",
   "version": "0.1.0",
-  "description": "Tracking embed lambda populate to GraphQL",
-  "main": "index.js",
+  "description": "Analytics service that track and report website traffic to GraphQL",
   "scripts": {
     "build:tracker": "esbuild lambda/tracker.ts --bundle --minify --platform=node --outfile=lambda/tracker.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/SubZtep/analytics.git"
+    "url": "git+https://github.com/SubZtep/analtics.git"
   },
   "keywords": [
     "analytics",
@@ -19,9 +18,9 @@
   "author": "Andras Serfozo <subztep@gmail.com>",
   "license": "Unlicense",
   "bugs": {
-    "url": "https://github.com/SubZtep/analytics/issues"
+    "url": "https://github.com/SubZtep/analtics/issues"
   },
-  "homepage": "https://github.com/SubZtep/analytics#readme",
+  "homepage": "https://github.com/SubZtep/analtics#readme",
   "dependencies": {
     "node-fetch": "^3.0.0-beta.9"
   },
