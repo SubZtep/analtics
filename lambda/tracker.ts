@@ -1,4 +1,4 @@
-import type { APIGatewayProxyEvent } from "aws-lambda"
+import type { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda"
 import fetch from "node-fetch"
 
 interface VisitParams {
@@ -7,37 +7,39 @@ interface VisitParams {
   location?: String
   referrer?: String
   noscript?: Boolean
+  account: string
 }
 
-const parseVisit = (event: APIGatewayProxyEvent) => {
-  const params: VisitParams = {}
-  if (event.headers["client-ip"]) {
-    params.ip = event.headers["client-ip"]
+const parseVisit = ({ headers, queryStringParameters }: APIGatewayProxyEvent) => {
+  const params: VisitParams = {
+    account: `{connect:"${queryStringParameters.account}"}`,
   }
-  if (event.headers["user-agent"]) {
-    params.userAgent = event.headers["user-agent"]
+  if (headers["client-ip"]) {
+    params.ip = `"${headers["client-ip"]}"`
   }
-  if (event.queryStringParameters.referrer) {
-    params.referrer = event.queryStringParameters.noscript
-  } else if (event.headers.referer) {
-    params.referrer = event.headers.referer
+  if (headers["user-agent"]) {
+    params.userAgent = `"${headers["user-agent"]}"`
   }
-  if (event.queryStringParameters.location) {
-    params.location = event.queryStringParameters.location
+  if (queryStringParameters.referrer) {
+    params.referrer = `"${queryStringParameters.noscript}"`
+  } else if (headers.referer) {
+    params.referrer = `"${headers.referer}"`
   }
-  if (event.queryStringParameters.noscript) {
-    params.noscript = event.queryStringParameters.noscript === "true"
+  if (queryStringParameters.location) {
+    params.location = `"${queryStringParameters.location}"`
+  }
+  if (queryStringParameters.noscript) {
+    params.noscript = queryStringParameters.noscript === "true"
   }
   return params
 }
 
-const createVisit = (event: APIGatewayProxyEvent) => `mutation {
+const createVisit = (params: VisitParams) => `mutation {
   createVisit(data: {
-    ${Object.entries(event).map(([key, value]) => `${key}:${value}`).join(",")},
-    created: "${new Date().toISOString()}",
-    account: {
-      connect: "${event.queryStringParameters.account}"
-    }
+    ${Object.entries(params)
+      .map(([key, value]) => `${key}:${value}`)
+      .join(",")},
+    created: "${new Date().toISOString()}"
   }) {
    _id
   }
@@ -53,10 +55,9 @@ const gql = (url: string, secret: string) => async (mutation: string) =>
     body: JSON.stringify({ query: mutation }),
   })
 
-
 exports.handler = async (event: APIGatewayProxyEvent) => {
-  const dbres = await gql(process.env.GRAPHQL_URL, process.env.GRAPHQL_SECRET)(createVisit(event))
-  const response: { [key: string]: any } = { statusCode: dbres.status }
+  const dbres = await gql(process.env.GRAPHQL_URL, process.env.GRAPHQL_SECRET)(createVisit(parseVisit(event)))
+  const response: APIGatewayProxyResult = { statusCode: dbres.status } as APIGatewayProxyResult
 
   if (dbres.ok) {
     response.headers = {
