@@ -56,6 +56,7 @@ const gql = (url: string, secret: string) => async (mutation: string) =>
   })
 
 exports.handler = async (event: APIGatewayProxyEvent) => {
+  // TODO: Test key somehow
   const dbres = await gql(process.env.GRAPHQL_URL, process.env.GRAPHQL_SECRET)(createVisit(parseVisit(event)))
   const response: APIGatewayProxyResult = { statusCode: dbres.status } as APIGatewayProxyResult
 

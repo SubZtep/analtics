@@ -15,10 +15,10 @@ Analytics service that track and report website traffic to GraphQL. Keep it simp
 1. Deploy (functions)
 2. Add required [environment variables](https://app.netlify.com/sites/analytics-lambda/settings/deploys#environment)
 
-   | Name           | Value                                             |
-   | -------------- | ------------------------------------------------- |
-   | GRAPHQL_URL    | e.g. https://graphql.fauna.com/graphql            |
-   | GRAPHQL_SECRET | Server key for `Authorization: Bearer ...` header |
+   | Name           | Value                                                |
+   | -------------- | ---------------------------------------------------- |
+   | GRAPHQL_URL    | e.g. https://graphql.fauna.com/graphql               |
+   | GRAPHQL_SECRET | For `Authorization: Bearer ${GRAPHQL_SECRET}` header |
 
 ### Fanua
 
@@ -26,9 +26,43 @@ Analytics service that track and report website traffic to GraphQL. Keep it simp
 2. Import schema from [`scripts/schema.gql`](https://github.com/SubZtep/analytics/blob/main/scripts/schema.gql)
 3. Generate server key in _security_
 
-### Your website
+### Account ID
 
-_TBA_
+1. Run this query below and receive your ID
+   ```sh
+   mutation {
+     createAccount(data: {
+       name: "YOUR_ACCOUNT_NAME"
+     }) {
+       _id
+     }
+   }
+   ```
+2. Save it somewhere
+
+## Embed Tracking
+
+| Variable    | Example                                                         |
+| ----------- | --------------------------------------------------------------- |
+| TRACKER_URL | https://analytics-lambda.netlify.app/.netlify/functions/tracker |
+| ACCOUNT_ID  | 234567890123456789                                              |
+
+1. To somewhere to the top of `head` tag
+   ```html
+   <script async src="TRACKER_URL?account=ACCOUNT_ID"></script>
+   ```
+2. To top of `body` tag, in case of JavaScript disabled
+   ```html
+   <noscript><iframe src="TRACKER_URL?account=ACCOUNT_ID&noscript=true" width="0" height="0" style="display:none;visibility:hidden"/></noscript>
+   ```
+
+## Plugins
+
+To generate tracking embeds.
+
+### Vite
+
+[plugins/vite.js](https://github.com/SubZtep/analytics/blob/main/plugins/vite.js)
 
 ---
 

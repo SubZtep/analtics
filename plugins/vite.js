@@ -1,7 +1,7 @@
 /**
  * @param {{tracker: string, account: string, productionOnly?: boolean}} obj Plugin options
  */
-const analytics = ({ tracker, account, productionOnly }) => ({
+exports.default = ({ tracker, account, productionOnly }) => ({
   name: "analytics",
   transformIndexHtml(html) {
     if (productionOnly && process.env.NODE_ENV === "development") {
