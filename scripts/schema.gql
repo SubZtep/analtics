@@ -12,3 +12,7 @@ type Visit {
   created: Time!
   account: Account!
 }
+
+type Query {
+  allVisits: [Visit!]
+}

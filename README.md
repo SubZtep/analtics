@@ -1,69 +1,103 @@
 # Analtics:godmode:
 
-Analytics service that track and report website traffic to GraphQL. Keep it simple.
+[![Netlify Status](https://api.netlify.com/api/v1/badges/37c894b5-d9b9-4897-92cf-2cd8b3c5be74/deploy-status)](https://app.netlify.com/sites/analtics/deploys)
 
-> :construction: On-Going
->
-> [![Netlify Status](https://api.netlify.com/api/v1/badges/37c894b5-d9b9-4897-92cf-2cd8b3c5be74/deploy-status)](https://app.netlify.com/sites/analtics/deploys)
+Analytics service that tracks and reports website traffic. Simply calls a _serverless_ function that stores visitor data from request headers and parameters via _GraphQL_. **Free from _cookies_** and other evil stuff. Meant to be self-hosted.
 
-## Setup
+> The following module descriptions use [Netlify](https://www.netlify.com/) and [Fauna](https://fauna.com/) as an example. These are **free services** on the level of my current needs and easy to set up. Both interchangeable but untested.
 
-[Netlify](https://www.netlify.com/) and [Fanua](https://fauna.com/) are interchangeable but untested. These are **free services** on the level of my current needs and easy to set up.
+## Database
 
-### Netlify
+At this point there is no interface but any GraphQL Playground could work. All you need is setup a database and generate a _server key_ (found in _security_) that works with _Bearer_ _Authorization_ header.
 
-1. Deploy (functions)
-2. Add required [environment variables](https://app.netlify.com/sites/analtics/settings/deploys#environment)
-
-   | Name           | Value                                                |
-   | -------------- | ---------------------------------------------------- |
-   | GRAPHQL_URL    | e.g. https://graphql.fauna.com/graphql               |
-   | GRAPHQL_SECRET | For `Authorization: Bearer ${GRAPHQL_SECRET}` header |
-
-### Fanua
-
-1. Setup database (help [here](https://www.netlify.com/blog/2018/07/09/building-serverless-crud-apps-with-netlify-functions-faunadb/#2-set-up-faunadb) and [here](https://github.com/netlify/netlify-faunadb-example#readme))
-2. Import schema from [`scripts/schema.gql`](https://github.com/SubZtep/analtics/blob/main/scripts/schema.gql)
-3. Generate server key in _security_
+Import schema manually from this repository: [`scripts/schema.gql`](https://github.com/SubZtep/analtics/blob/main/scripts/schema.gql).
 
 ### Account ID
 
-1. Run this query below and receive your ID
-   ```sh
-   mutation {
-     createAccount(data: {
-       name: "YOUR_ACCOUNT_NAME"
-     }) {
-       _id
-     }
+For able to use the same setup for multiple locations, create an account first with the following command and save the result id somewhere.
+
+```sh
+mutation {
+   createAccount(data: {
+      name: "YOUR_ACCOUNT_NAME"
+   }) {
+      _id
    }
-   ```
-2. Save it somewhere
+}
+```
 
-## Embed Tracking
+## Backend
 
-| Variable    | Example                                                         |
-| ----------- | --------------------------------------------------------------- |
+All you need is a lambda that authenticate the GraphQL request and do some basic data parsing. Deploy to _functions_ and add required [environment variables](https://app.netlify.com/sites/analtics/settings/deploys#environment).
+
+| Variable       | Value                                                |
+| -------------- | ---------------------------------------------------- |
+| GRAPHQL_URL    | e.g. https://graphql.fauna.com/graphql               |
+| GRAPHQL_SECRET | For `Authorization: Bearer ${GRAPHQL_SECRET}` header |
+
+### Website Embed
+
+The goal is to call the lambda for somehow at every trackable page.
+Replace the snippets with proper values.
+
+| Snippet     | Example Value                                           |
+| ----------- | ------------------------------------------------------- |
 | TRACKER_URL | https://analtics.netlify.app/.netlify/functions/tracker |
-| ACCOUNT_ID  | 234567890123456789                                              |
+| ACCOUNT_ID  | 234567890123456789                                      |
 
-1. To somewhere to the top of `head` tag
-   ```html
-   <script async src="TRACKER_URL?account=ACCOUNT_ID"></script>
-   ```
-2. To top of `body` tag, in case of JavaScript disabled
-   ```html
-   <noscript><iframe src="TRACKER_URL?account=ACCOUNT_ID&noscript=true" width="0" height="0" style="display:none;visibility:hidden"/></noscript>
-   ```
+Add the following code to the `head` tag for all the data, erlier is better.
+
+```html
+<script type="text/javascript">
+(function (d) {
+   var q = []
+   q.push("account=ACCOUNT_ID")
+   q.push("referrer=" + encodeURIComponent(d.referrer))
+   q.push("location=" + encodeURIComponent(d.location))
+
+   var a = d.createElement("script")
+   a.type = "text/javascript"
+   a.async = true
+   a.src = "TRACKER_URL?" + q.join("&")
+   var s = d.getElementsByTagName("script")[0]
+   s.parentNode.insertBefore(a, s)
+})(document)
+</script>
+```
+
+Use minified version for production.
+
+```
+<script type="text/javascript">(function(d){var a=d.createElement("script");a.type="text/javascript";a.async=true;a.src="TRACKER_URL?account=ACCOUNT_I&referrer="+encodeURIComponent(d.referrer)+"&location="+encodeURIComponent(d.location);var s=d.getElementsByTagName("script")[0];s.parentNode.insertBefore(a,s)})(document);</script>
+```
+
+In case of disabled _JavaScript_ the tracking is still available, straight into the top of `body` tag.
+
+```html
+<noscript>
+   <iframe
+      src="TRACKER_URL?account=ACCOUNT_ID&noscript=true"
+      width="0"
+      height="0"
+      style="display:none;visibility:hidden"
+   />
+</noscript>
+```
+
+Smaller is better here too.
+
+```
+<noscript><iframe src="TRACKER_URL?account=ACCOUNT_ID&noscript=true" width="0" height="0" style="display:none;visibility:hidden"/></noscript>
+```
 
 ## Plugins
 
-To generate tracking embeds.
+Good to generate tracking embeds. It's an on-going project that can change anythinh makes maintain easier.
 
-### Vite
-
-[plugins/vite.js](https://github.com/SubZtep/analtics/blob/main/plugins/vite.js)
+Only for [Vite](https://vitejs.dev/) at the moment: [plugins/vite.js](https://github.com/SubZtep/analtics/blob/main/plugins/vite.js).
 
 ---
 
-## :earth_asia: :curly_loop: :earth_africa: :curly_loop: :earth_americas:
+> ## :construction: :earth_asia: :earth_africa: :earth_americas: :construction:
+
+---
