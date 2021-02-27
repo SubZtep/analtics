@@ -9,5 +9,10 @@
     "skipLibCheck": true,
     "baseUrl": "."
   },
-  "include": ["lambda/**/*.ts"]
+  "include": ["lambda/**/*.ts", "scripts/**/*.ts"],
+  "ts-node": {
+    "compilerOptions": {
+      "isolatedModules": false
+    }
+  }
 }

@@ -1,5 +1,5 @@
 import type { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda"
-import fetch from "node-fetch"
+import gql from "../lib/gql"
 
 interface VisitParams {
   ip?: string
@@ -44,16 +44,6 @@ const createVisit = (params: VisitParams) => `mutation {
    _id
   }
 }`
-
-const gql = (url: string, secret: string) => async (mutation: string) =>
-  await fetch(url, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${secret}`,
-    },
-    body: JSON.stringify({ query: mutation }),
-  })
 
 exports.handler = async (event: APIGatewayProxyEvent) => {
   // TODO: Test key somehow
