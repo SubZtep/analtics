@@ -9,7 +9,7 @@
     "skipLibCheck": true,
     "baseUrl": "."
   },
-  "include": ["lambda/**/*.ts", "scripts/**/*.ts"],
+  "include": ["lambda/**/*.ts", "scripts/**/*.ts", "scripts/visits.js"],
   "ts-node": {
     "compilerOptions": {
       "isolatedModules": false

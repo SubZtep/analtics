@@ -108,6 +108,8 @@ Good to generate tracking embeds. It's an on-going project, anything can change,
 
 Only for [Vite](https://vitejs.dev/) at the moment: [plugins/vite.js](https://github.com/SubZtep/analtics/blob/main/plugins/vite.js).
 
+Install: `npm i SubZtep/analtics#main`
+
 ## Local Scripts
 
 Install the project on a terminal, add the previously described `GRAPHQL_URL` and `GRAPHQL_SECRET` variables to a new `.env` file. Run it with parameterized _npm_ like the following example.

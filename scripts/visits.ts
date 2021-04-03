@@ -1,11 +1,17 @@
+import { ArgumentParser } from "argparse"
+import chalk from "chalk"
 import gql from "../lib/gql"
 
+const parser = new ArgumentParser({
+  description: "List visits",
+})
+parser.add_argument("-a", "--account", { help: "Account ID from collection", required: true })
 ;(async function () {
   const q = gql(process.env.GRAPHQL_URL, process.env.GRAPHQL_SECRET)
 
   const res = await q(`
     query {
-      findAccountByID(id: ${process.argv.pop()}) {
+      findAccountByID(id: ${parser.parse_args().account}) {
         name
         visits {
           data {
@@ -23,6 +29,14 @@ import gql from "../lib/gql"
     return
   }
 
+  const json = await res.json()
   // @ts-ignore
-  console.log((await res.json()).data.findAccountByID.visits.data)
+  if (json.errors) {
+    // @ts-ignore
+    console.log(chalk.red(json.errors.map(error => error.message)))
+    process.exit(1)
+  }
+
+  // @ts-ignore
+  console.log(chalk.cyan(JSON.stringify(json.data.findAccountByID.visits.data, null, "  ")))
 })()

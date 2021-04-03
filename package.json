@@ -4,6 +4,7 @@
   "description": "Analytics service that track and report website traffic to GraphQL",
   "scripts": {
     "script": "ts-node -r dotenv/config",
+    "visits": "ts-node -r dotenv/config ./scripts/visits.ts",
     "build:tracker": "esbuild lambda/tracker.ts --bundle --minify --platform=node --outfile=lambda/tracker.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -23,14 +24,18 @@
   },
   "homepage": "https://github.com/SubZtep/analtics#readme",
   "dependencies": {
+    "apollo-server": "^2.22.2",
+    "argparse": "^2.0.1",
+    "chalk": "^4.1.0",
     "node-fetch": "^3.0.0-beta.9"
   },
   "devDependencies": {
-    "@types/aws-lambda": "^8.10.72",
-    "@types/node-fetch": "^2.5.8",
+    "@types/argparse": "^2.0.5",
+    "@types/aws-lambda": "^8.10.73",
+    "@types/node-fetch": "^2.5.9",
     "dotenv": "^8.2.0",
-    "esbuild": "^0.8.53",
+    "esbuild": "^0.11.5",
     "ts-node": "^9.1.1",
-    "typescript": "^4.2.2"
+    "typescript": "^4.2.3"
   }
 }
