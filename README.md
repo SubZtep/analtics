@@ -115,7 +115,7 @@ Install: `npm i SubZtep/analtics#main`
 Install the project on a terminal, add the previously described `GRAPHQL_URL` and `GRAPHQL_SECRET` variables to a new `.env` file. Run it with parameterized _npm_ like the following example.
 
 ```sh
-$ npm run script -- scripts/visits.ts [ACCOUNT_ID]
+$ npm run visits -- -a [ACCOUNT_ID]
 ```
 
 ---
