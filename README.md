@@ -114,6 +114,16 @@ Install: `npm i SubZtep/analtics#main`
 
 Install the project on a terminal, add the previously described `GRAPHQL_URL` and `GRAPHQL_SECRET` variables to a new `.env` file. Run it with parameterized _npm_ like the following example.
 
+### GeoIP
+
+Add location data to the existing IP addresses by running this below. For able to do it, [following this link](https://www.maxmind.com/en/accounts/529567/geoip/downloads), register and download into `bin/GeoLite2-City.mmdb` — happy when up to date.
+
+```sh
+$ deno run --allow-read --allow-net --no-check scripts/geoip.ts [ACCOUNT_ID]
+```
+
+### Visits
+
 ```sh
 $ npm run visits -- -a [ACCOUNT_ID]
 ```
