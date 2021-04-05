@@ -10,7 +10,6 @@ interface VisitLookUpParams {
 }
 
 const dotenv = config()
-
 export const q = await gql(dotenv.GRAPHQL_URL, dotenv.GRAPHQL_SECRET)
 
 /**
@@ -113,7 +112,7 @@ export const getGeoId = async (geo: GeoData): Promise<string | undefined> => {
   return await insertGeo(geo)
 }
 
-export const linkVisitGeo = async (geoId: string, visitId: string): Promi => {
+export const linkVisitGeo = async (geoId: string, visitId: string) => {
   const query = `mutation {
     updateVisit(id: ${visitId}, data: {
       geo: {
@@ -126,12 +125,65 @@ export const linkVisitGeo = async (geoId: string, visitId: string): Promi => {
   let res
 
   try {
-    console.log(query, res)
     res = await q(query)
-    console.log("xxx", res)
   } catch (e) {
-    console.log(e)
+    logError(e.message)
+    return
+  }
 
+  if (res.error) {
+    logError(res.error.message)
+    return
+  }
+}
+
+export const createAccount = async (name: string): Promise<string | undefined> => {
+  const query = `mutation {
+    createAccount(data: {
+      name: "${name.replaceAll('"', '\\"')}",
+    }) {
+     _id
+    }
+  }`
+  let res
+
+  try {
+    res = await q(query)
+  } catch (e) {
+    logError(e.message)
+    return
+  }
+
+  if (res.error) {
+    logError(res.error.message)
+    return
+  }
+
+  return res.createAccount._id
+}
+
+export const createVisit = async (account: string, request: Request, noScript: boolean) => {
+  // FIXME: request.url doesn't contain hashbang
+  const query = `mutation {
+    createVisit(data: {
+      account: {
+        connect: ${account}
+      },
+      ip: "${request.headers.get("x-forwarded-for")}",
+      userAgent: "${request.headers.get("user-agent")}",
+      ${request.referrer ? `referrer: \"${request.referrer}\",` : ""}
+      location: "${request.url}",
+      noscript: ${String(noScript)},
+      created: "${new Date().toISOString()}"
+    }) {
+     _id
+    }
+  }`
+  let res
+
+  try {
+    res = await q(query)
+  } catch (e) {
     logError(e.message)
     return
   }

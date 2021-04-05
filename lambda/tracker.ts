@@ -1,5 +1,5 @@
 import type { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda"
-import gql from "../lib/gql"
+import gql from "../lib/gql-js"
 
 interface VisitParams {
   ip?: string
