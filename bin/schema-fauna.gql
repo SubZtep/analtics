@@ -1,0 +1,149 @@
+directive @embedded on OBJECT
+directive @collection(name: String!) on OBJECT
+directive @index(name: String!) on FIELD_DEFINITION
+directive @resolver(
+  name: String
+  paginated: Boolean! = false
+) on FIELD_DEFINITION
+directive @relation(name: String) on FIELD_DEFINITION
+directive @unique(index: String) on FIELD_DEFINITION
+type Account {
+  _id: ID!
+  _ts: Long!
+  name: String
+  visits(
+    _size: Int
+    _cursor: String
+  ): VisitPage!
+}
+
+input AccountInput {
+  name: String
+  visits: AccountVisitsRelation
+}
+
+input AccountVisitsRelation {
+  create: [VisitInput]
+  connect: [ID]
+  disconnect: [ID]
+}
+
+scalar Date
+
+type Geo {
+  visits(
+    _size: Int
+    _cursor: String
+  ): VisitPage!
+  city: String
+  latitude: Float!
+  _id: ID!
+  country: String!
+  longitude: Float!
+  continent: String!
+  timeZone: String!
+  _ts: Long!
+}
+
+input GeoInput {
+  city: String
+  continent: String!
+  country: String!
+  latitude: Float!
+  longitude: Float!
+  timeZone: String!
+  visits: GeoVisitsRelation
+}
+
+type GeoPage {
+  data: [Geo]!
+  after: String
+  before: String
+}
+
+input GeoVisitsRelation {
+  create: [VisitInput]
+  connect: [ID]
+  disconnect: [ID]
+}
+
+scalar Long
+
+type Mutation {
+  updateGeo(
+    id: ID!
+    data: GeoInput!
+  ): Geo
+  deleteAccount(id: ID!): Account
+  createVisit(data: VisitInput!): Visit!
+  createGeo(data: GeoInput!): Geo!
+  updateAccount(
+    id: ID!
+    data: AccountInput!
+  ): Account
+  deleteGeo(id: ID!): Geo
+  createAccount(data: AccountInput!): Account!
+  updateVisit(
+    id: ID!
+    data: VisitInput!
+  ): Visit
+  deleteVisit(id: ID!): Visit
+}
+
+type Query {
+  allVisits(
+    _size: Int
+    _cursor: String
+  ): VisitPage!
+  findVisitByID(id: ID!): Visit
+  findGeoByID(id: ID!): Geo
+  geoCoords(latitude: Float!, longitude: Float!): Geo
+  allGeos(
+    _size: Int
+    _cursor: String
+  ): GeoPage!
+  findAccountByID(id: ID!): Account
+}
+
+scalar Time
+
+type Visit {
+  ip: String
+  location: String
+  _id: ID!
+  geo: Geo
+  userAgent: String
+  noscript: Boolean
+  account: Account!
+  referrer: String
+  created: Time
+  _ts: Long!
+}
+
+input VisitAccountRelation {
+  create: AccountInput
+  connect: ID
+}
+
+input VisitGeoRelation {
+  create: GeoInput
+  connect: ID
+  disconnect: Boolean
+}
+
+input VisitInput {
+  ip: String
+  userAgent: String
+  location: String
+  referrer: String
+  noscript: Boolean
+  created: Time
+  account: VisitAccountRelation
+  geo: VisitGeoRelation
+}
+
+type VisitPage {
+  data: [Visit]!
+  after: String
+  before: String
+}

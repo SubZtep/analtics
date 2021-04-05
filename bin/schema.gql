@@ -1,0 +1,34 @@
+type Account {
+  name: String
+  visits: [Visit!] @relation
+}
+
+type Visit {
+  ip: String
+  userAgent: String
+  location: String
+  referrer: String
+  noscript: Boolean
+  created: Time # reason for non-mandatory is fauna's schema generator
+  account: Account!
+  geo: Geo
+}
+
+type Geo {
+  city: String
+  continent: String!
+  country: String!
+  latitude: Float!
+  longitude: Float!
+  timeZone: String!
+  visits: [Visit!] @relation
+}
+
+type Query {
+  allVisits: [Visit!]
+  allGeos: [Geo!]
+  geoCoords(
+    latitude: Float!
+    longitude: Float!
+  ): Geo
+}

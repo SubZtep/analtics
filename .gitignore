@@ -1,3 +1,4 @@
 node_modules/
+bin/geomind/
 bin/GeoLite2-City.mmdb
 .env

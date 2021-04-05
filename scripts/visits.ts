@@ -1,6 +1,6 @@
 import { ArgumentParser } from "argparse"
 import chalk from "chalk"
-import gql from "../lib/gql"
+import gql from "../lib/gql-js"
 
 const parser = new ArgumentParser({
   description: "List visits",
@@ -24,6 +24,10 @@ parser.add_argument("-a", "--account", { help: "Account ID from collection", req
     }
   `)
 
+  if (!res.ok) {
+    console.error(res.statusText)
+    return
+  }
 
   const json = await res.json()
   // @ts-ignore
