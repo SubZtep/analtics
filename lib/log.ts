@@ -8,6 +8,10 @@ export const log = (msg1: string, msg2?: string) => {
   }
 }
 
-export const logError = (msg: string) => {
-  console.log(`${styles.red.open}${msg}${styles.red.close}`)
+export const logError = (msg1: string, msg2?: string) => {
+  if (msg2) {
+    console.log(`${styles.red.open}${msg1}${styles.red.close}`, `${styles.redBright.open}${msg2}${styles.redBright.close}`)
+  } else {
+    console.log(`${styles.red.open}${msg1}${styles.red.close}`)
+  }
 }

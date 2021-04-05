@@ -1,7 +1,6 @@
 import { config } from "https://deno.land/x/dotenv@v1.0.1/mod.ts"
 import type { GeoData } from "../lib/geoip.ts"
 import { log, logError } from "../lib/log.ts"
-import geoip from "../lib/geoip.ts"
 import gql from "../lib/gql.ts"
 
 interface VisitLookUpParams {
@@ -14,7 +13,7 @@ export const q = await gql(dotenv.GRAPHQL_URL, dotenv.GRAPHQL_SECRET)
 
 /**
  * Query all the existing _Visits_ which belongs to the _Account_ in `.env` file.
- * @param handleGeo ‒ Callback function with valid `Geo` data parameter.
+ * @param handleGeo ‒ Callback function with IP and Visit ID for process.
  * @param limit ‒ Number of items per requests.
  */
 export const accountVisits = async (handleGeo: (geo: GeoData, visitId: string) => void, limit = 10) => {
@@ -38,11 +37,12 @@ export const accountVisits = async (handleGeo: (geo: GeoData, visitId: string) =
 
     log("Geo data for:", res.findAccountByID.name)
 
+    if (res.findAccountByID.visits.data.length === 0) {
+      logError("No visit data on this page.")
+    }
+
     for (const { _id, ip } of res.findAccountByID.visits.data) {
-      const geo = geoip(ip)
-      if (geo) {
-        await handleGeo(geo, _id)
-      }
+      await handleGeo(ip, _id)
     }
 
     after = res.findAccountByID.visits.after
