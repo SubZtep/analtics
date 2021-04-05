@@ -1,13 +1,13 @@
-import chalkin from "https://deno.land/x/chalkin/mod.ts"
+import { styles } from "https://deno.land/x/ansi_styles@1.0.1/mod.ts"
 
 export const log = (msg1: string, msg2?: string) => {
   if (msg2) {
-    console.log(chalkin.green(msg1), chalkin.cyan(msg2))
+    console.log(`${styles.green.open}${msg1}${styles.green.close}`, `${styles.cyan.open}${msg2}${styles.cyan.close}`)
   } else {
-    console.log(chalkin.green(msg1))
+    console.log(`${styles.green.open}${msg1}${styles.green.close}`)
   }
 }
 
-export const logError = (message: string) => {
-  console.log(chalkin.red(message))
+export const logError = (msg: string) => {
+  console.log(`${styles.red.open}${msg}${styles.red.close}`)
 }
