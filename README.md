@@ -1,14 +1,10 @@
 # Analtics:godmode:
 
-[![Netlify Status](https://api.netlify.com/api/v1/badges/37c894b5-d9b9-4897-92cf-2cd8b3c5be74/deploy-status)](https://app.netlify.com/sites/analtics/deploys)
-
 Analytics service that tracks and reports website traffic. When someone opens the webpage, it calls a _serverless_ function that fetches visitor data from request headers and parameters and forwards it to _GraphQL_ for storing. **Free from _cookies_** and other evil stuff. Meant to be self-hosted.
 
 ## Why
 
 There are plenty of analytics scripts but I couldn't find one so much basic that satisfies my simple needs.
-
-From this point, it's easy to add any extra features, like event tracking or some kind of in-game analytics.
 
 ## Setup
 
@@ -135,3 +131,12 @@ $ npm run visits -- -a [ACCOUNT_ID]
 > ## :construction: :earth_asia: :earth_africa: :earth_americas: :construction:
 
 ---
+
+
+## Links (for dev)
+
+- [Google Analytics uses gif get request why not post request?](https://stackoverflow.com/a/30433304/1398275)
+- [Sending Data to Google Analytics](https://developers.google.com/analytics/devguides/collection/analyticsjs/sending-hits)
+- [Tracking Protection](https://developer.mozilla.org/en-US/docs/Mozilla/Firefox/Privacy/Tracking_Protection)
+- [HTTP Cache Headers - A Complete Guide](https://www.keycdn.com/blog/http-cache-headers)
+- [Cache-Control](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cache-Control)

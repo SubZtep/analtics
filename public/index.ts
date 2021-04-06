@@ -18,8 +18,18 @@ serve({
       { headers: { "content-type": "text/plain; charset=UTF-8" } }
     ),
   "/tracker/:account/:noscript?": async (request, { account, noscript }) => {
-    await createVisit(account, request, noscript === "noscript")
-    return new Response()
+    const hasJS = noscript !== "noscript"
+    await createVisit(account, request, !hasJS)
+
+    return new Response(null, {
+      headers: {
+        "content-type": hasJS ? "text/javascript; charset=utf-8" : "text/plain; charset=UTF-8",
+        // "content-type": "application/json; charset=UTF-8",
+        // "Content-Type": "text/html; charset=utf-8"
+        // "Content-Type": "text/javascript; charset=utf-8",
+        "X-Content-Type-Options": "nosniff",
+      },
+    })
   },
   "/favicon.ico": () => new Response(null, { status: 418 }),
 })
