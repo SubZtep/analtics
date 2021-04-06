@@ -1,4 +1,7 @@
-export default (url: string, token: string) => async (query: string, variables?: { [name: string]: string }) => {
+export default (url: string, token: string) => async (
+  query: string,
+  variables?: { [name: string]: string }
+) => {
   try {
     const res = await fetch(url, {
       method: "POST",

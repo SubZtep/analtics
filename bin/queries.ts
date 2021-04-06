@@ -6,19 +6,64 @@ if (Deno.env.get("GRAPHQL_URL") === undefined) {
   await import("https://deno.land/x/dotenv@v2.0.0/load.ts")
 }
 
-export const q = await gql(Deno.env.get("GRAPHQL_URL"), Deno.env.get("GRAPHQL_SECRET"))
+interface GQLError {
+  error?: {
+    message: string
+  }
+}
+
+interface AccountVisits extends GQLError {
+  findAccountByID: {
+    name: string
+    visits: {
+      data: {
+        _id: string
+        ip: string
+      }[]
+      after: string | null
+    }
+  }
+}
+
+interface CreateGeo extends GQLError {
+  createGeo: {
+    _id: string
+  }
+}
+
+interface GeoCoords extends GQLError {
+  geoCoords?: {
+    _id: string
+  }
+}
+
+interface UpdateVisit extends GQLError {
+  _id?: string
+}
+
+interface CreateAccount extends GQLError {
+  createAccount: {
+    _id: string
+  }
+}
+
+interface CreateVisit extends GQLError {
+  _id?: string
+}
+
+export const q = gql(Deno.env.get("GRAPHQL_URL")!, Deno.env.get("GRAPHQL_SECRET")!)
 
 /**
  * Query all the existing _Visits_ which belongs to the _Account_ in `.env` file.
  * @param handleGeo ‒ Callback function with IP and Visit ID for process.
  * @param limit ‒ Number of items per requests.
  */
-export const accountVisits = async (handleGeo: (geo: GeoData, visitId: string) => void, limit = 10) => {
+export const accountVisits = async (handleGeo: (ip: string, visitId: string) => Promise<void>, limit = 10) => {
   let after: string | null = null
   // TODO: filter visits with geo data
 
   do {
-    const res = await q(`
+    const res: AccountVisits = await q(`
       query {
         findAccountByID(id: ${Deno.env.get("ACCOUNT")}) {
           name
@@ -60,7 +105,7 @@ const insertGeo = async (geo: GeoData): Promise<string | undefined> => {
      _id
     }
   }`
-  let res
+  let res: CreateGeo
 
   try {
     res = await q(query)
@@ -86,7 +131,7 @@ const queryGeo = async ({ location }: GeoData): Promise<string | undefined> => {
     }
   `
 
-  let res
+  let res: GeoCoords
   try {
     res = await q(query)
   } catch (e) {
@@ -102,7 +147,7 @@ const queryGeo = async ({ location }: GeoData): Promise<string | undefined> => {
   return res.geoCoords?._id
 }
 
-export const getGeoId = async (geo: GeoData): Promise<string | undefined> => {
+export const getGeoId = async (geo: GeoData) => {
   const id = await queryGeo(geo)
   if (id) {
     return id
@@ -120,7 +165,7 @@ export const linkVisitGeo = async (geoId: string, visitId: string) => {
      _id
     }
   }`
-  let res
+  let res: UpdateVisit
 
   try {
     res = await q(query)
@@ -143,7 +188,7 @@ export const createAccount = async (name: string): Promise<string | undefined> =
      _id
     }
   }`
-  let res
+  let res: CreateAccount
 
   try {
     res = await q(query)
@@ -177,7 +222,7 @@ export const createVisit = async (account: string, request: Request, noScript: b
      _id
     }
   }`
-  let res
+  let res: CreateVisit
 
   try {
     res = await q(query)
