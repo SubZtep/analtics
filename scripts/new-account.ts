@@ -1,4 +1,3 @@
-import "https://deno.land/x/dotenv@v2.0.0/load.ts"
 import { createAccount } from "../bin/queries.ts"
 import { log, logError } from "../lib/log.ts"
 

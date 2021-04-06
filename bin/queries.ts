@@ -1,8 +1,10 @@
-import "https://deno.land/x/dotenv@v2.0.0/load.ts"
 import type { GeoData } from "../lib/geoip.ts"
 import { log, logError } from "../lib/log.ts"
 import gql from "../lib/gql.ts"
 
+if (Deno.env.get("GRAPHQL_URL") === undefined) {
+  await import("https://deno.land/x/dotenv@v2.0.0/load.ts")
+}
 
 export const q = await gql(Deno.env.get("GRAPHQL_URL"), Deno.env.get("GRAPHQL_SECRET"))
 
