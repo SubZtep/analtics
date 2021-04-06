@@ -1,15 +1,10 @@
-import { config } from "https://deno.land/x/dotenv@v1.0.1/mod.ts"
+import "https://deno.land/x/dotenv@v2.0.0/load.ts"
 import type { GeoData } from "../lib/geoip.ts"
 import { log, logError } from "../lib/log.ts"
 import gql from "../lib/gql.ts"
 
-interface VisitLookUpParams {
-  _id: string
-  ip: string
-}
 
-const dotenv = config()
-export const q = await gql(dotenv.GRAPHQL_URL, dotenv.GRAPHQL_SECRET)
+export const q = await gql(Deno.env.get("GRAPHQL_URL"), Deno.env.get("GRAPHQL_SECRET"))
 
 /**
  * Query all the existing _Visits_ which belongs to the _Account_ in `.env` file.
@@ -18,11 +13,12 @@ export const q = await gql(dotenv.GRAPHQL_URL, dotenv.GRAPHQL_SECRET)
  */
 export const accountVisits = async (handleGeo: (geo: GeoData, visitId: string) => void, limit = 10) => {
   let after: string | null = null
+  // TODO: filter visits with geo data
 
   do {
     const res = await q(`
       query {
-        findAccountByID(id: ${dotenv.ACCOUNT}) {
+        findAccountByID(id: ${Deno.env.get("ACCOUNT")}) {
           name
           visits(_size: ${limit}${after !== null ? `, _cursor: "${after}"` : ""}) {
             data {

@@ -1,4 +1,4 @@
-import { config } from "https://deno.land/x/dotenv@v2.0.0/mod.ts"
+import "https://deno.land/x/dotenv@v2.0.0/load.ts"
 import { createAccount } from "../bin/queries.ts"
 import { log, logError } from "../lib/log.ts"
 
@@ -7,7 +7,7 @@ if (Deno.args.length !== 1) {
   Deno.exit(2)
 }
 
-if (config().ACCOUNT) {
+if (Deno.env.get("ACCOUNT")) {
   logError("To use this script please remove account from .env file.")
   Deno.exit(2)
 }
