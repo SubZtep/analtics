@@ -46,11 +46,11 @@ Tested only and running on [Deno Deploy](https://deno.com/deploy). Started as ~~
 2. Add [`public/routes.ts`](https://github.com/SubZtep/analtics/blob/main/public/routes) as entry point.
 3. Set some environment variables.
 
-| Variable       | Value                             |
-| -------------- | --------------------------------- |
-| GRAPHQL_URL    | https://graphql.fauna.com/graphql |
-| GRAPHQL_SECRET | Server key from above.            |
-| ACCOUNT        | Generated GraphQL ID.             |
+   | Variable       | Value                             |
+   | -------------- | --------------------------------- |
+   | GRAPHQL_URL    | https://graphql.fauna.com/graphql |
+   | GRAPHQL_SECRET | Server key from above.            |
+   | ACCOUNT        | Generated GraphQL ID.             |
 
 # Embed Code
 
@@ -66,7 +66,7 @@ Add to the following HTML snippet to the `head` tag, change url and ID where nec
 
 Good to generate tracking embeds, make maintenance easier.
 
-Only for [Vite](https://vitejs.dev/) atm [plugins/vite.js](https://github.com/SubZtep/analtics/blob/main/plugins/vite.js) and it might be broken but planning for WordPress as well.
+Only for [Vite](https://vitejs.dev/) atm [plugins/vite.js](https://github.com/SubZtep/analtics/blob/main/plugins/vite.js) and it might be broken but planning for _WordPress_ as well.
 
 # Local Scripts
 
@@ -90,9 +90,7 @@ $ deno run --allow-env --allow-net --allow-read scripts/wipe-data.ts
 $ deno run --allow-env --allow-net --allow-read scripts/wipe-data.ts --delete
 ```
 
-# Misc.
-
-## Links for check for dev
+# Links for good
 
 - [Google Analytics uses gif get request why not post request?](https://stackoverflow.com/a/30433304/1398275)
 - [HTTP Cache Headers - A Complete Guide](https://www.keycdn.com/blog/http-cache-headers)
@@ -101,6 +99,6 @@ $ deno run --allow-env --allow-net --allow-read scripts/wipe-data.ts --delete
 - [Tracking Protection](https://developer.mozilla.org/en-US/docs/Mozilla/Firefox/Privacy/Tracking_Protection)
 - [Cache-Control](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cache-Control)
 
-## License
+# License
 
 Unlicense :trollface:

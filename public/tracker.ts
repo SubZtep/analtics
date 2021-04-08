@@ -1,5 +1,5 @@
-import type { PathParams } from "https://deno.land/x/sift@0.2.0/mod.ts"
 import type { Feature } from "../lib/analtics.types.ts"
+import type { PathParams } from "https://deno.land/x/sift@0.2.0/mod.ts"
 import { createVisit, createEvent, createFeature } from "../lib/queries.ts"
 
 const js = (origin: string, visit: string) => `
