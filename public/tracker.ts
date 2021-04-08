@@ -3,7 +3,7 @@ import { createVisit, createEvent } from "../lib/queries.ts"
 
 const js = (base: string) => `
 document.addEventListener("visibilitychange", () => {
-  navigator.sendBeacon(${base}/visibilitychange", document.visibilityState)
+  navigator.sendBeacon("${base}/visibilitychange", document.visibilityState)
 })
 `
 
