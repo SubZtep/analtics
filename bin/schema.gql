@@ -12,6 +12,7 @@ type Visit {
   created: Time # reason for non-mandatory is fauna's schema generator
   account: Account!
   geo: Geo
+  events: [Event!] @relation
 }
 
 type Geo {
@@ -22,6 +23,13 @@ type Geo {
   longitude: Float!
   timeZone: String!
   visits: [Visit!] @relation
+}
+
+type Event {
+  name: String!
+  value: String
+  created: Time
+  visit: Visit!
 }
 
 type Query {

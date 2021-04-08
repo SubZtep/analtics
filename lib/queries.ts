@@ -1,55 +1,8 @@
-import type { GeoData } from "../lib/geoip.ts"
-import { log, logError } from "../lib/log.ts"
-import gql from "../lib/gql.ts"
-
-if (Deno.env.get("GRAPHQL_URL") === undefined) {
-  await import("https://deno.land/x/dotenv@v2.0.0/load.ts")
-}
-
-interface GQLError {
-  error?: {
-    message: string
-  }
-}
-
-interface AccountVisits extends GQLError {
-  findAccountByID: {
-    name: string
-    visits: {
-      data: {
-        _id: string
-        ip: string
-      }[]
-      after: string | null
-    }
-  }
-}
-
-interface CreateGeo extends GQLError {
-  createGeo: {
-    _id: string
-  }
-}
-
-interface GeoCoords extends GQLError {
-  geoCoords?: {
-    _id: string
-  }
-}
-
-interface UpdateVisit extends GQLError {
-  _id?: string
-}
-
-interface CreateAccount extends GQLError {
-  createAccount: {
-    _id: string
-  }
-}
-
-interface CreateVisit extends GQLError {
-  _id?: string
-}
+import type * as GQL from "./gql.types.ts"
+import type { GeoData } from "./geoip.ts"
+import { log, logError } from "./log.ts"
+import gql from "./gql.ts"
+import "./dotenv.ts"
 
 export const q = gql(Deno.env.get("GRAPHQL_URL")!, Deno.env.get("GRAPHQL_SECRET")!)
 
@@ -63,7 +16,7 @@ export const accountVisits = async (handleGeo: (ip: string, visitId: string) => 
   // TODO: filter visits with geo data
 
   do {
-    const res: AccountVisits = await q(`
+    const res: GQL.AccountVisits = await q(`
       query {
         findAccountByID(id: ${Deno.env.get("ACCOUNT")}) {
           name
@@ -105,7 +58,7 @@ const insertGeo = async (geo: GeoData): Promise<string | undefined> => {
      _id
     }
   }`
-  let res: CreateGeo
+  let res: GQL.CreateGeo
 
   try {
     res = await q(query)
@@ -130,21 +83,18 @@ const queryGeo = async ({ location }: GeoData): Promise<string | undefined> => {
       }
     }
   `
-
-  let res: GeoCoords
+  let res: GQL.GeoCoords
   try {
     res = await q(query)
   } catch (e) {
     logError(e.message)
     return
   }
-
   if (res.error) {
     logError(res.error.message)
     return
   }
-
-  return res.geoCoords?._id
+  return res.geoCoords._id
 }
 
 export const getGeoId = async (geo: GeoData) => {
@@ -165,19 +115,18 @@ export const linkVisitGeo = async (geoId: string, visitId: string) => {
      _id
     }
   }`
-  let res: UpdateVisit
-
+  let res: GQL.UpdateVisit
   try {
     res = await q(query)
   } catch (e) {
     logError(e.message)
     return
   }
-
   if (res.error) {
     logError(res.error.message)
     return
   }
+  return res.updateVisit._id
 }
 
 export const createAccount = async (name: string): Promise<string | undefined> => {
@@ -188,20 +137,17 @@ export const createAccount = async (name: string): Promise<string | undefined> =
      _id
     }
   }`
-  let res: CreateAccount
-
+  let res: GQL.CreateAccount
   try {
     res = await q(query)
   } catch (e) {
     logError(e.message)
     return
   }
-
   if (res.error) {
     logError(res.error.message)
     return
   }
-
   return res.createAccount._id
 }
 
@@ -222,17 +168,43 @@ export const createVisit = async (account: string, request: Request, noScript: b
      _id
     }
   }`
-  let res: CreateVisit
+  let res: GQL.CreateVisit
+  try {
+    res = await q(query)
+  } catch (e) {
+    logError("WWW", e.message)
+    return
+  }
+  if (res.error) {
+    logError(res.error.message)
+    return
+  }
+  return res.createVisit._id
+}
 
+export const createEvent = async (visit: string, name: string, value?: string) => {
+  const query = `mutation {
+    createEvent(data: {
+      name: "${name}",
+      ${value ? `value: "${value.replaceAll('"', '\\"')}",` : ""}
+      created: "${new Date().toISOString()}",
+      visit: {
+        connect: ${visit}
+      }
+    }) {
+     _id
+    }
+  }`
+  let res: GQL.CreateEvent
   try {
     res = await q(query)
   } catch (e) {
     logError(e.message)
     return
   }
-
   if (res.error) {
     logError(res.error.message)
     return
   }
+  return res.createEvent._id
 }

@@ -1,18 +1,43 @@
-# Analtics:godmode:
+# :godmode:
 
-Analytics service that tracks and reports website traffic. When someone opens the webpage, it calls a _serverless_ function that fetches visitor data from request headers and parameters and forwards it to _GraphQL_ for storing. **Free from _cookies_** and other evil stuff. Meant to be self-hosted.
+```
+▒▄▀▄░█▄░█▒▄▀▄░█▒░░▀█▀░█░▄▀▀░▄▀▀
+░█▀█░█▒▀█░█▀█▒█▄▄░▒█▒░█░▀▄▄▒▄██
+```
 
-## Why
+HTML embed code for public page that log visits and selected events triggered by visitors to [Fauna](https://fauna.com/) GraphQL via [Deno Deploy](https://deno.com/deploy).
+
+###### WIP! No Cookies ⊂(´• ω •`⊂)
+
+---
+
+<!--
+
+# Readme nav.
+
+* ### [Why](#why)
+
+* ### [Setup](#setup)
+
+* ### [Local Scripts](#local-scripts)
+
+* ### [GeoIP](#geoip)
+
+* ### [Links (for dev)](#links-for-dev)
+
+> ###### ---------
+
+# Why
 
 There are plenty of analytics scripts but I couldn't find one so much basic that satisfies my simple needs.
 
-## Setup
+# Setup
 
 This description should be enough to run the service. If something is not clear feel free to check the open source.
 
 > The following module descriptions use [Netlify](https://www.netlify.com/) and [Fauna](https://fauna.com/) as an example. Both (in a sense) interchangeable, but these are **free services** on the entry-level and easy to set up.
 
-### Database
+## Database
 
 All queries and mutations are written in GraphQL. Using Fauna flavour which is hopefully identical to any other implementation. Requests using the [node-fetch](https://github.com/node-fetch/node-fetch) library — the only production dependency.
 
@@ -20,7 +45,7 @@ All you need is set up a database and generate a _server key_. that works with _
 
 Import schema manually from this repository: [`scripts/schema.gql`](https://github.com/SubZtep/analtics/blob/main/scripts/schema.gql).
 
-#### Account ID
+### Account ID
 
 For being able to use the same setup for multiple locations, create an account first with the following command and save the result id somewhere.
 
@@ -34,7 +59,7 @@ mutation {
 }
 ```
 
-### Backend
+## Backend
 
 All you need is a lambda that authenticates the GraphQL request and does some basic data parsing. Deploy to _functions_ and add required [environment variables](https://app.netlify.com/sites/analtics/settings/deploys#environment).
 
@@ -98,7 +123,7 @@ Smaller is better here too.
 <noscript><iframe src="TRACKER_URL?account=ACCOUNT_ID&noscript=true" width="0" height="0" style="display:none;visibility:hidden"/></noscript>
 ```
 
-### Plugins
+# Plugins
 
 Good to generate tracking embeds. It's an on-going project, anything can change, make maintenance easier.
 
@@ -106,11 +131,18 @@ Only for [Vite](https://vitejs.dev/) at the moment: [plugins/vite.js](https://gi
 
 Install: `npm i SubZtep/analtics#main`
 
-## Local Scripts
+# Local Scripts
 
-Install the project on a terminal, add the previously described `GRAPHQL_URL` and `GRAPHQL_SECRET` variables to a new `.env` file. Run it with parameterized _npm_ like the following example.
+Install the project on a terminal, add the previously described `GRAPHQL_URL`, `GRAPHQL_SECRET` and `ACCOUNT` (as account id) variables to a new `.env` file. Run it with parameterized _npm_ like the following example.
 
-### GeoIP
+```sh
+$ deno run --allow-read --allow-net --no-check scripts/new-account.ts Testes
+$ deno run --allow-read --allow-net --no-check scripts/new-account.ts 'Hello "eooo"'
+$ deployctl run --no-check --watch ./public/index.ts
+$ deno run --allow-read --allow-net --allow-env --no-check scripts/geo.ts
+```
+
+# GeoIP
 
 Add location data to the existing IP addresses by running this below. For able to do it, [following this link](https://www.maxmind.com/en/accounts/529567/geoip/downloads), register and download into `bin/GeoLite2-City.mmdb` — happy when up to date.
 
@@ -133,10 +165,12 @@ $ npm run visits -- -a [ACCOUNT_ID]
 ---
 
 
-## Links (for dev)
+# Links (for dev)
 
 - [Google Analytics uses gif get request why not post request?](https://stackoverflow.com/a/30433304/1398275)
 - [Sending Data to Google Analytics](https://developers.google.com/analytics/devguides/collection/analyticsjs/sending-hits)
 - [Tracking Protection](https://developer.mozilla.org/en-US/docs/Mozilla/Firefox/Privacy/Tracking_Protection)
 - [HTTP Cache Headers - A Complete Guide](https://www.keycdn.com/blog/http-cache-headers)
 - [Cache-Control](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cache-Control)
+- [Beaconing In Practice](https://calendar.perfplanet.com/2020/beaconing-in-practice/)
+-->
