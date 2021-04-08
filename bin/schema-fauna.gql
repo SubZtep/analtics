@@ -30,6 +30,63 @@ input AccountVisitsRelation {
 
 scalar Date
 
+type Event {
+  name: String!
+  _id: ID!
+  visit: Visit!
+  value: String
+  created: Time
+  _ts: Long!
+}
+
+input EventInput {
+  name: String!
+  value: String
+  created: Time
+  visit: EventVisitRelation
+}
+
+type EventPage {
+  data: [Event]!
+  after: String
+  before: String
+}
+
+input EventVisitRelation {
+  create: VisitInput
+  connect: ID
+}
+
+type Feature {
+  location: String!
+  pixelRatio: Float!
+  _id: ID!
+  visit: Visit!
+  screenWidth: Float!
+  innerHeight: Float!
+  screenHeight: Float!
+  referrer: String!
+  innerWidth: Float!
+  _ts: Long!
+}
+
+input FeatureInput {
+  location: String!
+  referrer: String!
+  screenWidth: Float!
+  screenHeight: Float!
+  innerWidth: Float!
+  innerHeight: Float!
+  pixelRatio: Float!
+  visit: FeatureVisitRelation
+}
+
+input FeatureVisitRelation {
+  create: VisitInput
+  connect: ID
+  disconnect: Boolean
+}
+
 type Geo {
   visits(
     _size: Int
@@ -70,10 +127,18 @@ input GeoVisitsRelation {
 scalar Long
 
 type Mutation {
+  updateFeature(
+    id: ID!
+    data: FeatureInput!
+  ): Feature
   updateGeo(
     id: ID!
     data: GeoInput!
   ): Geo
+  updateEvent(
+    id: ID!
+    data: EventInput!
+  ): Event
   deleteAccount(id: ID!): Account
   createVisit(data: VisitInput!): Visit!
   createGeo(data: GeoInput!): Geo!
@@ -81,21 +146,27 @@ type Mutation {
     id: ID!
     data: AccountInput!
   ): Account
+  createEvent(data: EventInput!): Event!
   deleteGeo(id: ID!): Geo
+  deleteFeature(id: ID!): Feature
   createAccount(data: AccountInput!): Account!
+  createFeature(data: FeatureInput!): Feature!
   updateVisit(
     id: ID!
     data: VisitInput!
   ): Visit
   deleteVisit(id: ID!): Visit
+  deleteEvent(id: ID!): Event
 }
 
 type Query {
+  findEventByID(id: ID!): Event
   allVisits(
     _size: Int
     _cursor: String
   ): VisitPage!
   findVisitByID(id: ID!): Visit
+  findFeatureByID(id: ID!): Feature
   findGeoByID(id: ID!): Geo
   geoCoords(latitude: Float!, longitude: Float!): Geo
   allGeos(
@@ -109,6 +180,7 @@ scalar Time
 
 type Visit {
   ip: String
+  feature: Feature
   location: String
   _id: ID!
   geo: Geo
@@ -116,12 +188,27 @@ type Visit {
   noscript: Boolean
   account: Account!
   referrer: String
+  events(
+    _size: Int
+    _cursor: String
+  ): EventPage!
   created: Time
   _ts: Long!
 }
 
 input VisitAccountRelation {
   create: AccountInput
+  connect: ID
+}
+
+input VisitEventsRelation {
+  create: [EventInput]
+  connect: [ID]
+  disconnect: [ID]
+}
+
+input VisitFeatureRelation {
+  create: FeatureInput
   connect: ID
 }
 
@@ -140,6 +227,8 @@ input VisitInput {
   created: Time
   account: VisitAccountRelation
   geo: VisitGeoRelation
+  events: VisitEventsRelation
+  feature: VisitFeatureRelation
 }
 
 type VisitPage {

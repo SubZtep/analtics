@@ -1,3 +1,4 @@
+import type { Feature } from "./analtics.types.ts"
 import type * as GQL from "./gql.types.ts"
 import type { GeoData } from "./geoip.ts"
 import { log, logError } from "./log.ts"
@@ -8,10 +9,10 @@ export const q = gql(Deno.env.get("GRAPHQL_URL")!, Deno.env.get("GRAPHQL_SECRET"
 
 /**
  * Query all the existing _Visits_ which belongs to the _Account_ in `.env` file.
- * @param handleGeo ‒ Callback function with IP and Visit ID for process.
+ * @param handleGeo ‒ Callback function with Visit ID and IP for process.
  * @param limit ‒ Number of items per requests.
  */
-export const accountVisits = async (handleGeo: (ip: string, visitId: string) => Promise<void>, limit = 10) => {
+export const accountVisits = async (handleGeo: (visitId: string, ip: string) => Promise<void>, limit = 10) => {
   let after: string | null = null
   // TODO: filter visits with geo data
 
@@ -152,7 +153,6 @@ export const createAccount = async (name: string): Promise<string | undefined> =
 }
 
 export const createVisit = async (account: string, request: Request, noScript: boolean) => {
-  // FIXME: request.url doesn't contain hashbang
   const query = `mutation {
     createVisit(data: {
       account: {
@@ -160,8 +160,6 @@ export const createVisit = async (account: string, request: Request, noScript: b
       },
       ip: "${request.headers.get("x-forwarded-for")}",
       userAgent: "${request.headers.get("user-agent")}",
-      ${request.referrer ? `referrer: \"${request.referrer}\",` : ""}
-      location: "${request.url}",
       noscript: ${String(noScript)},
       created: "${new Date().toISOString()}"
     }) {
@@ -207,4 +205,35 @@ export const createEvent = async (visit: string, name: string, value?: string) =
     return
   }
   return res.createEvent._id
+}
+
+export const createFeature = async (visit: string, feature: Feature) => {
+  const query = `mutation {
+    createFeature(data: {
+      location: "${feature.location}",
+      referrer: "${feature.referrer}",
+      screenWidth: ${feature.screenWidth},
+      screenHeight: ${feature.screenHeight},
+      innerWidth: ${feature.innerWidth},
+      innerHeight: ${feature.innerHeight},
+      pixelRatio: ${feature.pixelRatio},
+      visit: {
+        connect: ${visit}
+      }
+    }) {
+     _id
+    }
+  }`
+  let res: GQL.CreateFeature
+  try {
+    res = await q(query)
+  } catch (e) {
+    logError(e.message)
+    return
+  }
+  if (res.error) {
+    logError(res.error.message)
+    return
+  }
+  return res.createFeature._id
 }

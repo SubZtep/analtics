@@ -52,3 +52,9 @@ export interface CreateEvent extends GQLError {
     _id: string
   }
 }
+
+export interface CreateFeature extends GQLError {
+  createFeature: {
+    _id: string
+  }
+}

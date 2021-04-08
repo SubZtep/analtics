@@ -6,13 +6,12 @@ type Account {
 type Visit {
   ip: String
   userAgent: String
-  location: String
-  referrer: String
   noscript: Boolean
   created: Time # reason for non-mandatory is fauna's schema generator
   account: Account!
   geo: Geo
   events: [Event!] @relation
+  feature: Feature @relation
 }
 
 type Geo {
@@ -29,6 +28,17 @@ type Event {
   name: String!
   value: String
   created: Time
+  visit: Visit!
+}
+
+type Feature {
+  location: String!
+  referrer: String!
+  screenWidth: Float!
+  screenHeight: Float!
+  innerWidth: Float!
+  innerHeight: Float!
+  pixelRatio: Float!
   visit: Visit!
 }
 

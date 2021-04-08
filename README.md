@@ -5,172 +5,102 @@
 ░█▀█░█▒▀█░█▀█▒█▄▄░▒█▒░█░▀▄▄▒▄██
 ```
 
-HTML embed code for public page that log visits and selected events triggered by visitors to [Fauna](https://fauna.com/) GraphQL via [Deno Deploy](https://deno.com/deploy).
+HTML embed code for public pages that log visits and selected events triggered by visitors to [Fauna](https://fauna.com/) GraphQL via [Deno Deploy](https://deno.com/deploy).
 
-###### WIP! No Cookies ⊂(´• ω •`⊂)
+> :warning: **Work In Progress** — Let's change anything anytime anywhere ∑d(°∀°d)
+
+###### No Cookies ⊂(´• ω •`⊂)
 
 ---
 
-<!--
-
-# Readme nav.
-
-* ### [Why](#why)
-
-* ### [Setup](#setup)
-
-* ### [Local Scripts](#local-scripts)
-
-* ### [GeoIP](#geoip)
-
-* ### [Links (for dev)](#links-for-dev)
-
-> ###### ---------
-
 # Why
 
-There are plenty of analytics scripts but I couldn't find one so much basic that satisfies my simple needs.
+There are plenty of free analytics scripts but I couldn't find one that just as basic as satisfies my simple needs.
 
-# Setup
+# Self-Hosting Setup
 
-This description should be enough to run the service. If something is not clear feel free to check the open source.
-
-> The following module descriptions use [Netlify](https://www.netlify.com/) and [Fauna](https://fauna.com/) as an example. Both (in a sense) interchangeable, but these are **free services** on the entry-level and easy to set up.
+I have it [live](https://analytics.demo.land) and it costs no money so far on my level, this description should be enough to run your own service. Also it's the doc for now. If something is not clear feel free to check the open source or [raise a ticket](https://github.com/SubZtep/analtics/issues).
 
 ## Database
 
-All queries and mutations are written in GraphQL. Using Fauna flavour which is hopefully identical to any other implementation. Requests using the [node-fetch](https://github.com/node-fetch/node-fetch) library — the only production dependency.
+Tested only and running on [Fauna](https://fauna.com/) which does its job quite well, I can't compare. All queries and mutations are written in **GraphQL**.
 
-All you need is set up a database and generate a _server key_. that works with _Bearer_ _Authorization_ header.
+1. Register.
+2. Set up a database.
+3. generate a _server key_ for _Bearer Authorization_ header.
+4. Import schema from [`bin/schema.gql`](https://github.com/SubZtep/analtics/blob/main/bin/schema.gql).
 
-Import schema manually from this repository: [`scripts/schema.gql`](https://github.com/SubZtep/analtics/blob/main/scripts/schema.gql).
-
-### Account ID
-
-For being able to use the same setup for multiple locations, create an account first with the following command and save the result id somewhere.
-
-```sh
-mutation {
-   createAccount(data: {
-      name: "YOUR_ACCOUNT_NAME"
-   }) {
-      _id
-   }
-}
-```
+   | Type    | Description                                        |
+   | ------- | -------------------------------------------------- |
+   | Account | Owner of an embed code for website (You).          |
+   | Visit   | Ideally one entry is one user session.             |
+   | Geo     | Visitor location data populated by a local script. |
+   | Event   | On/off for now.                                    |
+   | Feature | Screen data for now.                               |
 
 ## Backend
 
-All you need is a lambda that authenticates the GraphQL request and does some basic data parsing. Deploy to _functions_ and add required [environment variables](https://app.netlify.com/sites/analtics/settings/deploys#environment).
+Tested only and running on [Deno Deploy](https://deno.com/deploy). Started as ~~Netlify lambda~~ but **Deno** is much more cool, it's like _NodeJS_ without the experience.
 
-| Variable       | Value                                                |
-| -------------- | ---------------------------------------------------- |
-| GRAPHQL_URL    | e.g. https://graphql.fauna.com/graphql               |
-| GRAPHQL_SECRET | For `Authorization: Bearer ${GRAPHQL_SECRET}` header |
+1. Register.
+2. Add [`public/routes.ts`](https://github.com/SubZtep/analtics/blob/main/public/routes) as entry point.
+3. Set some environment variables.
 
-#### Embed Code
+| Variable       | Value                             |
+| -------------- | --------------------------------- |
+| GRAPHQL_URL    | https://graphql.fauna.com/graphql |
+| GRAPHQL_SECRET | Server key from above.            |
+| ACCOUNT        | Generated GraphQL ID.             |
 
-The goal is to call the lambda for somehow at every trackable page.
-Replace the snippets with proper values.
+# Embed Code
 
-| Snippet     | Example Value                                           |
-| ----------- | ------------------------------------------------------- |
-| TRACKER_URL | https://analtics.netlify.app/.netlify/functions/tracker |
-| ACCOUNT_ID  | 234567890123456789                                      |
+Add to the following HTML snippet to the `head` tag, change url and ID where necessary.
 
-Add the following code to the `head` tag for all the data, earlier is better.
-
+<!-- prettier ignore -->
 ```html
-<script type="text/javascript">
-  ;(function (d) {
-    var q = []
-    q.push("account=ACCOUNT_ID")
-    q.push("referrer=" + encodeURIComponent(d.referrer))
-    q.push("location=" + encodeURIComponent(d.location))
-
-    var a = d.createElement("script")
-    a.type = "text/javascript"
-    a.async = true
-    a.src = "TRACKER_URL?" + q.join("&")
-    var s = d.getElementsByTagName("script")[0]
-    s.parentNode.insertBefore(a, s)
-  })(document)
-</script>
-```
-
-Use a minified version for production.
-
-```
-<script type="text/javascript">(function(d){var a=d.createElement("script");a.type="text/javascript";a.async=true;a.src="TRACKER_URL?account=ACCOUNT_I&referrer="+encodeURIComponent(d.referrer)+"&location="+encodeURIComponent(d.location);var s=d.getElementsByTagName("script")[0];s.parentNode.insertBefore(a,s)})(document);</script>
-```
-
-In case of disabled _JavaScript_ the tracking is still available, straight into the top of the `body` tag.
-
-```html
-<noscript>
-  <iframe
-    src="TRACKER_URL?account=ACCOUNT_ID&noscript=true"
-    width="0"
-    height="0"
-    style="display:none;visibility:hidden"
-  />
-</noscript>
-```
-
-Smaller is better here too.
-
-```
-<noscript><iframe src="TRACKER_URL?account=ACCOUNT_ID&noscript=true" width="0" height="0" style="display:none;visibility:hidden"/></noscript>
+<script type="text/javascript" src="https://analtics.demo.land/tracker/000000000000000001" defer></script>
+<noscript><iframe src="https://analtics.demo.land/tracker/000000000000000001/noscript" width="0" height="0" style="display:none;visibility:hidden" /></noscript>
 ```
 
 # Plugins
 
-Good to generate tracking embeds. It's an on-going project, anything can change, make maintenance easier.
+Good to generate tracking embeds, make maintenance easier.
 
-Only for [Vite](https://vitejs.dev/) at the moment: [plugins/vite.js](https://github.com/SubZtep/analtics/blob/main/plugins/vite.js).
-
-Install: `npm i SubZtep/analtics#main`
+Only for [Vite](https://vitejs.dev/) atm [plugins/vite.js](https://github.com/SubZtep/analtics/blob/main/plugins/vite.js) and it might be broken but planning for WordPress as well.
 
 # Local Scripts
 
-Install the project on a terminal, add the previously described `GRAPHQL_URL`, `GRAPHQL_SECRET` and `ACCOUNT` (as account id) variables to a new `.env` file. Run it with parameterized _npm_ like the following example.
+Mostly helpers during development.
+Had to add `--no-check` for a dependency.
+For IP to location [download](https://www.maxmind.com/en/accounts/529567/geoip/downloads) database to `bin/GeoLite2-City.mmdb`.
 
 ```sh
+# Create new account
 $ deno run --allow-read --allow-net --no-check scripts/new-account.ts Testes
 $ deno run --allow-read --allow-net --no-check scripts/new-account.ts 'Hello "eooo"'
-$ deployctl run --no-check --watch ./public/index.ts
-$ deno run --allow-read --allow-net --allow-env --no-check scripts/geo.ts
+
+# Start the server
+$ deployctl run --no-check --watch ./public/routes.ts
+
+# Add location data
+$ deno run --allow-read --allow-net --allow-env --no-check scripts/fill-geo.ts
+
+# Delete all data
+$ deno run --allow-env --allow-net --allow-read scripts/wipe-data.ts
+$ deno run --allow-env --allow-net --allow-read scripts/wipe-data.ts --delete
 ```
 
-# GeoIP
+# Misc.
 
-Add location data to the existing IP addresses by running this below. For able to do it, [following this link](https://www.maxmind.com/en/accounts/529567/geoip/downloads), register and download into `bin/GeoLite2-City.mmdb` — happy when up to date.
-
-```sh
-$ deno run --allow-read --allow-net --no-check scripts/geoip.ts [ACCOUNT_ID]
-```
-
-### Visits
-
-```sh
-$ npm run visits -- -a [ACCOUNT_ID]
-```
-
----
-
-> _#tba #wip_
->
-> ## :construction: :earth_asia: :earth_africa: :earth_americas: :construction:
-
----
-
-
-# Links (for dev)
+## Links for check for dev
 
 - [Google Analytics uses gif get request why not post request?](https://stackoverflow.com/a/30433304/1398275)
-- [Sending Data to Google Analytics](https://developers.google.com/analytics/devguides/collection/analyticsjs/sending-hits)
-- [Tracking Protection](https://developer.mozilla.org/en-US/docs/Mozilla/Firefox/Privacy/Tracking_Protection)
 - [HTTP Cache Headers - A Complete Guide](https://www.keycdn.com/blog/http-cache-headers)
-- [Cache-Control](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cache-Control)
+- [Sending Data to Google Analytics](https://developers.google.com/analytics/devguides/collection/analyticsjs/sending-hits)
 - [Beaconing In Practice](https://calendar.perfplanet.com/2020/beaconing-in-practice/)
--->
+- [Tracking Protection](https://developer.mozilla.org/en-US/docs/Mozilla/Firefox/Privacy/Tracking_Protection)
+- [Cache-Control](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cache-Control)
+
+## License
+
+Unlicense :trollface:

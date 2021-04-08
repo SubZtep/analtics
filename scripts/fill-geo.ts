@@ -1,8 +1,8 @@
-import { accountVisits, getGeoId, linkVisitGeo } from "../bin/queries.ts"
+import { accountVisits, getGeoId, linkVisitGeo } from "../lib/queries.ts"
 import geoip from "../lib/geoip.ts"
 
 
-await accountVisits(async (ip, visitId) => {
+await accountVisits(async (visitId, ip) => {
   const geo = geoip(ip)
   if (geo === undefined) {
     return

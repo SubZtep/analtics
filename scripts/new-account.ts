@@ -1,4 +1,4 @@
-import { createAccount } from "../bin/queries.ts"
+import { createAccount } from "../lib/queries.ts"
 import { log, logError } from "../lib/log.ts"
 
 if (Deno.args.length !== 1) {
