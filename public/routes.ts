@@ -3,8 +3,6 @@ import { handleTracker, handleEvent, handleFeature } from "./tracker.ts"
 import homePage from "./home.jsx"
 import "../lib/dotenv.ts"
 
-console.log("XXX", Deno.env.get("GRAPHQL_SECRET"))
-
 serve({
   // Api
   "/tracker/:account/:noscript?": handleTracker,
