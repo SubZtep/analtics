@@ -32,7 +32,7 @@ export const accountVisits = async (handleGeo: (visitId: string, ip: string) => 
       }
     `)
 
-    log("Geo data for:", res.findAccountByID.name)
+    log("Geo data for", res.findAccountByID.name)
 
     if (res.findAccountByID.visits.data.length === 0) {
       logError("No visit data on this page.")
