@@ -39,7 +39,7 @@ export const accountVisits = async (handleGeo: (visitId: string, ip: string) => 
     }
 
     for (const { _id, ip } of res.findAccountByID.visits.data) {
-      await handleGeo(ip, _id)
+      await handleGeo(_id, ip)
     }
 
     after = res.findAccountByID.visits.after
@@ -84,6 +84,8 @@ const queryGeo = async ({ location }: GeoData): Promise<string | undefined> => {
       }
     }
   `
+
+
   let res: GQL.GeoCoords
   try {
     res = await q(query)
@@ -91,11 +93,12 @@ const queryGeo = async ({ location }: GeoData): Promise<string | undefined> => {
     logError(e.message)
     return
   }
+
   if (res.error) {
     logError(res.error.message)
     return
   }
-  return res.geoCoords._id
+  return res.geoCoords?._id
 }
 
 export const getGeoId = async (geo: GeoData) => {

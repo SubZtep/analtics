@@ -26,7 +26,7 @@ export interface CreateGeo extends GQLError {
 export interface GeoCoords extends GQLError {
   geoCoords: {
     _id: string
-  }
+  } | null
 }
 
 export interface UpdateVisit extends GQLError {

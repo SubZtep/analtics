@@ -9,7 +9,8 @@ await accountVisits(async (visitId, ip) => {
   }
 
   const id = await getGeoId(geo)
+  console.log(id)
   if (id !== undefined) {
     await linkVisitGeo(id, visitId)
   }
-})
+}, 1)
