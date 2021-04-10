@@ -1,7 +1,6 @@
-import { serve, jsx } from "https://deno.land/x/sift@0.2.0/mod.ts"
-import { handleTracker, handleEvent, handleFeature } from "./tracker.ts"
-import homePage from "./home.jsx"
-import "../lib/dotenv.ts"
+import { jsx, serve } from "../deps.ts";
+import { handleEvent, handleFeature, handleTracker } from "./tracker.ts";
+import homePage from "./home.jsx";
 
 serve({
   // Api
@@ -12,4 +11,4 @@ serve({
   // Web
   "/": () => jsx(homePage()),
   "/favicon.ico": () => new Response(null, { status: 418 }),
-})
+});

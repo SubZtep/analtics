@@ -1,0 +1,23 @@
+envFile:
+  - .env
+
+allow:
+  - read
+  - net
+  - env
+
+scripts:
+  start:
+    desc: Start local server
+    cmd: deployctl run --no-check ./public/routes.ts
+  fill-geo:
+    desc: Fill geo location data based on visitor IP
+    cmd: scripts/fill-geo.ts
+    noCheck: true
+  new-account:
+    desc: Create new account
+    cmd: scripts/new-account.ts
+    noCheck: true
+  wipe-data:
+    desc: Delete all data
+    cmd: scripts/wipe-data.ts

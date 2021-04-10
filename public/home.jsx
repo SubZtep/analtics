@@ -1,3 +1,3 @@
-import { h } from "https://deno.land/x/sift@0.2.0/mod.ts"
+import { h } from "../deps.ts";
 
-export default () => <tt> ▅▀▅ █▚▌ ▅▀▅ █▄ ▀█▀ █ ◖ ▄█▀</tt>
+export default () => <tt>▅▀▅ █▚▌ ▅▀▅ █▄ ▀█▀ █ ◖ ▄█▀</tt>;

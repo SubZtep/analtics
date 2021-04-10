@@ -1,19 +1,24 @@
-import type { Feature } from "./analtics.types.ts"
-import type * as GQL from "./gql.types.ts"
-import type { GeoData } from "./geoip.ts"
-import { log, logError } from "./log.ts"
-import gql from "./gql.ts"
-import "./dotenv.ts"
+import type { Feature } from "./analtics.types.ts";
+import type * as GQL from "./gql.types.ts";
+import type { GeoData } from "./geoip.ts";
+import { log, logError } from "./log.ts";
+import gql from "./gql.ts";
 
-export const q = gql(Deno.env.get("GRAPHQL_URL")!, Deno.env.get("GRAPHQL_SECRET")!)
+export const q = gql(
+  Deno.env.get("GRAPHQL_URL")!,
+  Deno.env.get("GRAPHQL_SECRET")!,
+);
 
 /**
  * Query all the existing _Visits_ which belongs to the _Account_ in `.env` file.
  * @param handleGeo ‒ Callback function with Visit ID and IP for process.
  * @param limit ‒ Number of items per requests.
  */
-export const accountVisits = async (handleGeo: (visitId: string, ip: string) => Promise<void>, limit = 10) => {
-  let after: string | null = null
+export const accountVisits = async (
+  handleGeo: (visitId: string, ip: string) => Promise<void>,
+  limit = 10,
+) => {
+  let after: string | null = null;
   // TODO: filter visits with geo data
 
   do {
@@ -21,7 +26,9 @@ export const accountVisits = async (handleGeo: (visitId: string, ip: string) => 
       query {
         findAccountByID(id: ${Deno.env.get("ACCOUNT")}) {
           name
-          visits(_size: ${limit}${after !== null ? `, _cursor: "${after}"` : ""}) {
+          visits(_size: ${limit}${
+      after !== null ? `, _cursor: "${after}"` : ""
+    }) {
             data {
               _id
               ip
@@ -30,21 +37,21 @@ export const accountVisits = async (handleGeo: (visitId: string, ip: string) => 
           }
         }
       }
-    `)
+    `);
 
-    log("Geo data for", res.findAccountByID.name)
+    log("Geo data for", res.findAccountByID.name);
 
     if (res.findAccountByID.visits.data.length === 0) {
-      logError("No visit data on this page.")
+      logError("No visit data on this page.");
     }
 
     for (const { _id, ip } of res.findAccountByID.visits.data) {
-      await handleGeo(_id, ip)
+      await handleGeo(_id, ip);
     }
 
-    after = res.findAccountByID.visits.after
-  } while (after)
-}
+    after = res.findAccountByID.visits.after;
+  } while (after);
+};
 
 const insertGeo = async (geo: GeoData): Promise<string | undefined> => {
   const query = `mutation {
@@ -58,23 +65,23 @@ const insertGeo = async (geo: GeoData): Promise<string | undefined> => {
     }) {
      _id
     }
-  }`
-  let res: GQL.CreateGeo
+  }`;
+  let res: GQL.CreateGeo;
 
   try {
-    res = await q(query)
+    res = await q(query);
   } catch (e) {
-    logError(e.message)
-    return
+    logError(e.message);
+    return;
   }
 
   if (res.error) {
-    logError(res.error.message)
-    return
+    logError(res.error.message);
+    return;
   }
 
-  return res.createGeo._id
-}
+  return res.createGeo._id;
+};
 
 const queryGeo = async ({ location }: GeoData): Promise<string | undefined> => {
   const query = `
@@ -83,31 +90,30 @@ const queryGeo = async ({ location }: GeoData): Promise<string | undefined> => {
         _id
       }
     }
-  `
+  `;
 
-
-  let res: GQL.GeoCoords
+  let res: GQL.GeoCoords;
   try {
-    res = await q(query)
+    res = await q(query);
   } catch (e) {
-    logError(e.message)
-    return
+    logError(e.message);
+    return;
   }
 
   if (res.error) {
-    logError(res.error.message)
-    return
+    logError(res.error.message);
+    return;
   }
-  return res.geoCoords?._id
-}
+  return res.geoCoords?._id;
+};
 
 export const getGeoId = async (geo: GeoData) => {
-  const id = await queryGeo(geo)
+  const id = await queryGeo(geo);
   if (id) {
-    return id
+    return id;
   }
-  return await insertGeo(geo)
-}
+  return await insertGeo(geo);
+};
 
 export const linkVisitGeo = async (geoId: string, visitId: string) => {
   const query = `mutation {
@@ -118,44 +124,50 @@ export const linkVisitGeo = async (geoId: string, visitId: string) => {
     }) {
      _id
     }
-  }`
-  let res: GQL.UpdateVisit
+  }`;
+  let res: GQL.UpdateVisit;
   try {
-    res = await q(query)
+    res = await q(query);
   } catch (e) {
-    logError(e.message)
-    return
+    logError(e.message);
+    return;
   }
   if (res.error) {
-    logError(res.error.message)
-    return
+    logError(res.error.message);
+    return;
   }
-  return res.updateVisit._id
-}
+  return res.updateVisit._id;
+};
 
-export const createAccount = async (name: string): Promise<string | undefined> => {
+export const createAccount = async (
+  name: string,
+): Promise<string | undefined> => {
   const query = `mutation {
     createAccount(data: {
       name: "${name.replaceAll('"', '\\"')}",
     }) {
      _id
     }
-  }`
-  let res: GQL.CreateAccount
+  }`;
+  let res: GQL.CreateAccount;
   try {
-    res = await q(query)
+    res = await q(query);
   } catch (e) {
-    logError(e.message)
-    return
+    logError(e.message);
+    return;
   }
   if (res.error) {
-    logError(res.error.message)
-    return
+    logError(res.error.message);
+    return;
   }
-  return res.createAccount._id
-}
+  return res.createAccount._id;
+};
 
-export const createVisit = async (account: string, request: Request, noScript: boolean) => {
+export const createVisit = async (
+  account: string,
+  request: Request,
+  noScript: boolean,
+) => {
   const query = `mutation {
     createVisit(data: {
       account: {
@@ -168,22 +180,26 @@ export const createVisit = async (account: string, request: Request, noScript: b
     }) {
      _id
     }
-  }`
-  let res: GQL.CreateVisit
+  }`;
+  let res: GQL.CreateVisit;
   try {
-    res = await q(query)
+    res = await q(query);
   } catch (e) {
-    logError("WWW", e.message)
-    return
+    logError("WWW", e.message);
+    return;
   }
   if (res.error) {
-    logError(res.error.message)
-    return
+    logError(res.error.message);
+    return;
   }
-  return res.createVisit._id
-}
+  return res.createVisit._id;
+};
 
-export const createEvent = async (visit: string, name: string, value?: string) => {
+export const createEvent = async (
+  visit: string,
+  name: string,
+  value?: string,
+) => {
   const query = `mutation {
     createEvent(data: {
       name: "${name}",
@@ -195,20 +211,20 @@ export const createEvent = async (visit: string, name: string, value?: string) =
     }) {
      _id
     }
-  }`
-  let res: GQL.CreateEvent
+  }`;
+  let res: GQL.CreateEvent;
   try {
-    res = await q(query)
+    res = await q(query);
   } catch (e) {
-    logError(e.message)
-    return
+    logError(e.message);
+    return;
   }
   if (res.error) {
-    logError(res.error.message)
-    return
+    logError(res.error.message);
+    return;
   }
-  return res.createEvent._id
-}
+  return res.createEvent._id;
+};
 
 export const createFeature = async (visit: string, feature: Feature) => {
   const query = `mutation {
@@ -226,17 +242,17 @@ export const createFeature = async (visit: string, feature: Feature) => {
     }) {
      _id
     }
-  }`
-  let res: GQL.CreateFeature
+  }`;
+  let res: GQL.CreateFeature;
   try {
-    res = await q(query)
+    res = await q(query);
   } catch (e) {
-    logError(e.message)
-    return
+    logError(e.message);
+    return;
   }
   if (res.error) {
-    logError(res.error.message)
-    return
+    logError(res.error.message);
+    return;
   }
-  return res.createFeature._id
-}
+  return res.createFeature._id;
+};
