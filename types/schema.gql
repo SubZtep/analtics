@@ -1,5 +1,5 @@
 type Account {
-  name: String
+  name: String!
   visits: [Visit!] @relation
 }
 

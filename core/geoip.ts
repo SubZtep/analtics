@@ -1,6 +1,5 @@
 import type { CityResponse, CountryResponse } from "../deps.ts";
-import { Maxmind } from "../deps.ts";
-import { logError } from "./log.ts";
+import { Maxmind, red } from "../deps.ts";
 
 export type GeoData =
   & Required<Pick<CountryResponse, "continent" | "country">>
@@ -13,6 +12,6 @@ export default (ip: string): GeoData | undefined => {
   try {
     return geodb.lookup_city(ip);
   } catch (e) {
-    logError(e.message);
+    console.error(red(e.message));
   }
 };

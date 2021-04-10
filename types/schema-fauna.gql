@@ -7,6 +7,7 @@ directive @resolver(
 ) on FIELD_DEFINITION
 directive @relation(name: String) on FIELD_DEFINITION
 directive @unique(index: String) on FIELD_DEFINITION
+
 type Account {
   _id: ID!
   _ts: Long!
@@ -181,13 +182,11 @@ scalar Time
 type Visit {
   ip: String
   feature: Feature
-  location: String
   _id: ID!
   geo: Geo
   userAgent: String
   noscript: Boolean
   account: Account!
-  referrer: String
   events(
     _size: Int
     _cursor: String
@@ -221,8 +220,6 @@ input VisitGeoRelation {
 input VisitInput {
   ip: String
   userAgent: String
-  location: String
-  referrer: String
   noscript: Boolean
   created: Time
   account: VisitAccountRelation

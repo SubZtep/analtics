@@ -4,8 +4,9 @@ HTML embed code for public pages that log visits and selected events triggered
 by visitors to [Fauna](https://fauna.com/) GraphQL via
 [Deno Deploy](https://deno.com/deploy).
 
-> :warning: **Work In Progress** — Let's change anything anytime anywhere ∑d(°∀°d)
->
+> :warning: **Work In Progress** — Let's change anything anytime anywhere
+> ∑d(°∀°d)
+
 > No Cookies ⊂(´• ω •`⊂)
 
 [![vr scripts](https://badges.velociraptor.run/flat.svg)](https://velociraptor.run)

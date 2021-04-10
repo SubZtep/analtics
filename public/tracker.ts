@@ -1,5 +1,5 @@
-import type { Feature } from "../core/analtics.types.ts";
-import type { PathParams } from "https://deno.land/x/sift@0.2.0/mod.ts";
+import type { PathParams } from "../deps.ts";
+import type { Feature } from "../graphql/analtics.types.ts";
 import { createEvent, createFeature, createVisit } from "../core/queries.ts";
 
 const js = (origin: string, visit: string) =>
@@ -34,8 +34,6 @@ export const handleTracker = async (request: Request, params?: PathParams) => {
   if (visit === undefined) {
     return new Response(null, { status: 500 });
   }
-
-  const base = `${new URL(request.url).origin}/event/${visit}`;
 
   return new Response(hasJS ? js(new URL(request.url).origin, visit) : null, {
     headers: {

@@ -1,7 +1,7 @@
-import type { Feature } from "./analtics.types.ts";
-import type * as GQL from "./gql.types.ts";
 import type { GeoData } from "./geoip.ts";
-import { log, logError } from "./log.ts";
+import type * as GQL from "./gql.types.ts";
+import type { Feature } from "./analtics.types.ts";
+import { cyan, green, red } from "../deps.ts";
 import gql from "./gql.ts";
 
 export const q = gql(
@@ -39,10 +39,10 @@ export const accountVisits = async (
       }
     `);
 
-    log("Geo data for", res.findAccountByID.name);
+    console.log(green("Geo data for"), cyan(res.findAccountByID.name));
 
     if (res.findAccountByID.visits.data.length === 0) {
-      logError("No visit data on this page.");
+      console.info(red("No visit data on this page."));
     }
 
     for (const { _id, ip } of res.findAccountByID.visits.data) {
@@ -71,12 +71,12 @@ const insertGeo = async (geo: GeoData): Promise<string | undefined> => {
   try {
     res = await q(query);
   } catch (e) {
-    logError(e.message);
+    console.error(red(e.message));
     return;
   }
 
   if (res.error) {
-    logError(res.error.message);
+    console.error(red(res.error.message));
     return;
   }
 
@@ -96,12 +96,12 @@ const queryGeo = async ({ location }: GeoData): Promise<string | undefined> => {
   try {
     res = await q(query);
   } catch (e) {
-    logError(e.message);
+    console.error(red(e.message));
     return;
   }
 
   if (res.error) {
-    logError(res.error.message);
+    console.error(red(res.error.message));
     return;
   }
   return res.geoCoords?._id;
@@ -129,11 +129,11 @@ export const linkVisitGeo = async (geoId: string, visitId: string) => {
   try {
     res = await q(query);
   } catch (e) {
-    logError(e.message);
+    console.error(red(e.message));
     return;
   }
   if (res.error) {
-    logError(res.error.message);
+    console.error(red(res.error.message));
     return;
   }
   return res.updateVisit._id;
@@ -153,11 +153,11 @@ export const createAccount = async (
   try {
     res = await q(query);
   } catch (e) {
-    logError(e.message);
+    console.error(red(e.message));
     return;
   }
   if (res.error) {
-    logError(res.error.message);
+    console.error(red(res.error.message));
     return;
   }
   return res.createAccount._id;
@@ -185,11 +185,11 @@ export const createVisit = async (
   try {
     res = await q(query);
   } catch (e) {
-    logError("WWW", e.message);
+    console.error(red(e.message));
     return;
   }
   if (res.error) {
-    logError(res.error.message);
+    console.error(red(res.error.message));
     return;
   }
   return res.createVisit._id;
@@ -216,11 +216,11 @@ export const createEvent = async (
   try {
     res = await q(query);
   } catch (e) {
-    logError(e.message);
+    console.error(red(e.message));
     return;
   }
   if (res.error) {
-    logError(res.error.message);
+    console.error(red(res.error.message));
     return;
   }
   return res.createEvent._id;
@@ -247,11 +247,11 @@ export const createFeature = async (visit: string, feature: Feature) => {
   try {
     res = await q(query);
   } catch (e) {
-    logError(e.message);
+    console.error(red(e.message));
     return;
   }
   if (res.error) {
-    logError(res.error.message);
+    console.error(red(res.error.message));
     return;
   }
   return res.createFeature._id;
