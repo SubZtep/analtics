@@ -1,6 +1,5 @@
-import { jsx, serve } from "../deps.ts";
+import { serve, serveStatic } from "../deps.ts";
 import { handleEvent, handleFeature, handleTracker } from "./tracker.ts";
-import homePage from "./home.jsx";
 
 serve({
   // Api
@@ -9,6 +8,6 @@ serve({
   "/feature/:visit": handleFeature,
 
   // Web
-  "/": () => jsx(homePage()),
+  "/": serveStatic("home.html", { baseUrl: import.meta.url }),
   "/favicon.ico": () => new Response(null, { status: 418 }),
 });

@@ -1,6 +1,5 @@
-import type { GeoData } from "./geoip.ts";
 import type * as GQL from "./gql.types.ts";
-import type { Feature } from "./analtics.types.ts";
+import type { Feature, GeoData } from "../types/analytics.ts";
 import { cyan, green, red } from "../deps.ts";
 import gql from "./gql.ts";
 
@@ -14,10 +13,10 @@ export const q = gql(
  * @param handleGeo ‒ Callback function with Visit ID and IP for process.
  * @param limit ‒ Number of items per requests.
  */
-export const accountVisits = async (
+export async function accountVisits(
   handleGeo: (visitId: string, ip: string) => Promise<void>,
   limit = 10,
-) => {
+) {
   let after: string | null = null;
   // TODO: filter visits with geo data
 
@@ -51,9 +50,9 @@ export const accountVisits = async (
 
     after = res.findAccountByID.visits.after;
   } while (after);
-};
+}
 
-const insertGeo = async (geo: GeoData): Promise<string | undefined> => {
+async function insertGeo(geo: GeoData): Promise<string | undefined> {
   const query = `mutation {
     createGeo(data: {
       ${geo.city ? `city: "${geo.city.names.en}",` : ""}
@@ -81,9 +80,9 @@ const insertGeo = async (geo: GeoData): Promise<string | undefined> => {
   }
 
   return res.createGeo._id;
-};
+}
 
-const queryGeo = async ({ location }: GeoData): Promise<string | undefined> => {
+async function queryGeo({ location }: GeoData): Promise<string | undefined> {
   const query = `
     query {
       geoCoords(latitude: ${location.latitude}, longitude: ${location.longitude}) {
@@ -105,17 +104,20 @@ const queryGeo = async ({ location }: GeoData): Promise<string | undefined> => {
     return;
   }
   return res.geoCoords?._id;
-};
+}
 
-export const getGeoId = async (geo: GeoData) => {
+export async function getGeoId(geo: GeoData) {
   const id = await queryGeo(geo);
   if (id) {
     return id;
   }
   return await insertGeo(geo);
-};
+}
 
-export const linkVisitGeo = async (geoId: string, visitId: string) => {
+export async function linkVisitGeo(
+  geoId: string,
+  visitId: string,
+): Promise<string | undefined> {
   const query = `mutation {
     updateVisit(id: ${visitId}, data: {
       geo: {
@@ -137,11 +139,11 @@ export const linkVisitGeo = async (geoId: string, visitId: string) => {
     return;
   }
   return res.updateVisit._id;
-};
+}
 
-export const createAccount = async (
+export async function createAccount(
   name: string,
-): Promise<string | undefined> => {
+): Promise<string | undefined> {
   const query = `mutation {
     createAccount(data: {
       name: "${name.replaceAll('"', '\\"')}",
@@ -161,13 +163,13 @@ export const createAccount = async (
     return;
   }
   return res.createAccount._id;
-};
+}
 
-export const createVisit = async (
+export async function createVisit(
   account: string,
   request: Request,
   noScript: boolean,
-) => {
+): Promise<string | undefined> {
   const query = `mutation {
     createVisit(data: {
       account: {
@@ -193,13 +195,13 @@ export const createVisit = async (
     return;
   }
   return res.createVisit._id;
-};
+}
 
-export const createEvent = async (
+export async function createEvent(
   visit: string,
   name: string,
   value?: string,
-) => {
+): Promise<string | undefined> {
   const query = `mutation {
     createEvent(data: {
       name: "${name}",
@@ -224,9 +226,12 @@ export const createEvent = async (
     return;
   }
   return res.createEvent._id;
-};
+}
 
-export const createFeature = async (visit: string, feature: Feature) => {
+export async function createFeature(
+  visit: string,
+  feature: Feature,
+): Promise<string | undefined> {
   const query = `mutation {
     createFeature(data: {
       location: "${feature.location}",
@@ -255,4 +260,4 @@ export const createFeature = async (visit: string, feature: Feature) => {
     return;
   }
   return res.createFeature._id;
-};
+}

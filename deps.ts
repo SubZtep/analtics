@@ -6,4 +6,4 @@ export type { PathParams } from "https://deno.land/x/sift@0.2.0/mod.ts";
 export { cyan, green, red } from "https://deno.land/std@0.92.0/fmt/colors.ts";
 export { Maxmind } from "https://raw.githubusercontent.com/josh-hemphill/maxminddb-deno/dev/mod.ts";
 export { time, timezone } from "https://deno.land/x/time.ts@v2.0.1/mod.ts";
-export { h, jsx, serve } from "https://deno.land/x/sift@0.2.0/mod.ts";
+export { serve, serveStatic } from "https://deno.land/x/sift@0.2.0/mod.ts";

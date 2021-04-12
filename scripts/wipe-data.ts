@@ -3,7 +3,6 @@
  * Very dangerous!
  */
 import gql from "../core/gql.ts";
-import { log, logError } from "../core/log.ts";
 
 export const q = gql(
   Deno.env.get("GRAPHQL_URL")!,
@@ -12,7 +11,7 @@ export const q = gql(
 
 let doDelete = true;
 if (Deno.args.length === 0 || Deno.args[0] !== "--delete") {
-  logError(
+  console.log(
     "If .env surely points to a test, for real delete add argument",
     "--delete",
   );
@@ -38,14 +37,14 @@ const res = await q(`
 `);
 
 if (res.findAccountByID.visits.data.length === 0) {
-  logError("No visit for", res.findAccountByID.name);
+  console.log("No visit for", res.findAccountByID.name);
   Deno.exit(0);
 }
 
-log("Delete for account", res.findAccountByID.name);
+console.log("Delete for account", res.findAccountByID.name);
 
 for (const { _id: vid, events } of res.findAccountByID.visits.data) {
-  log("Visit", vid);
+  console.log("Visit", vid);
 
   if (events.data.length === 0) {
     if (doDelete) {
@@ -60,7 +59,7 @@ for (const { _id: vid, events } of res.findAccountByID.visits.data) {
     }
   } else {
     for (const { _id: eid } of events.data) {
-      log("Event", eid);
+      console.log("Event", eid);
 
       if (doDelete) {
         const res2 = await q(`

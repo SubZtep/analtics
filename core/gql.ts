@@ -1,5 +1,5 @@
-export default (url: string, token: string) =>
-  async (
+export default function (url: string, token: string) {
+  return async (
     query: string,
     variables?: { [name: string]: string },
   ) => {
@@ -30,3 +30,4 @@ export default (url: string, token: string) =>
       return { error };
     }
   };
+}

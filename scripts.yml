@@ -10,6 +10,15 @@ scripts:
   start:
     desc: Start local server
     cmd: deployctl run --no-check ./public/routes.ts
+  test:
+    desc: Run unit tests
+    cmd: deno test
+    envFile: .env.test
+  new-test-account:
+    desc: Create new account
+    cmd: scripts/new-account.ts testes
+    envFile: .env.test
+    noCheck: true
   fill-geo:
     desc: Fill geo location data based on visitor IP
     cmd: scripts/fill-geo.ts

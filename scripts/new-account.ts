@@ -1,13 +1,12 @@
 import { createAccount } from "../core/queries.ts";
-import { log, logError } from "../core/log.ts";
 
 if (Deno.args.length !== 1) {
-  logError("The only argument is the account name.");
+  console.log("The only argument is the account name.");
   Deno.exit(2);
 }
 
 if (Deno.env.get("ACCOUNT")) {
-  logError("To use this script please remove account from .env file.");
+  console.log("To use this script please remove account from .env file.");
   Deno.exit(2);
 }
 
@@ -17,4 +16,4 @@ if (id === undefined) {
   Deno.exit(1);
 }
 
-log("Account ID:", id);
+console.log(id);

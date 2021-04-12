@@ -1,9 +1,9 @@
 import type { PathParams } from "../deps.ts";
-import type { Feature } from "../graphql/analtics.types.ts";
+import type { Feature } from "../graphql/analtics.ts";
 import { createEvent, createFeature, createVisit } from "../core/queries.ts";
 
-const js = (origin: string, visit: string) =>
-  `
+function js(origin: string, visit: string) {
+  return `
 document.addEventListener("DOMContentLoaded", () => {
   setTimeout(() => {
     navigator.sendBeacon("${origin}/feature/${visit}", JSON.stringify({
@@ -22,8 +22,9 @@ document.addEventListener("visibilitychange", () => {
   navigator.sendBeacon("${origin}/event/${visit}/visibilitychange", document.visibilityState)
 })
 `;
+}
 
-export const handleTracker = async (request: Request, params?: PathParams) => {
+export async function handleTracker(request: Request, params?: PathParams) {
   if (params === undefined || typeof params.account !== "string") {
     return new Response(null, { status: 400 });
   }
@@ -44,11 +45,12 @@ export const handleTracker = async (request: Request, params?: PathParams) => {
       "X-Content-Type-Options": "nosniff",
     },
   });
-};
+}
 
-export const handleEvent = async (request: Request, params?: PathParams) => {
+export async function handleEvent(request: Request, params?: PathParams) {
   if (
-    params === undefined || typeof params.visit !== "string" ||
+    params === undefined ||
+    typeof params.visit !== "string" ||
     typeof params.event !== "string"
   ) {
     return new Response(null, { status: 400 });
@@ -56,9 +58,9 @@ export const handleEvent = async (request: Request, params?: PathParams) => {
 
   await createEvent(params.visit, params.event, await request.text());
   return new Response();
-};
+}
 
-export const handleFeature = async (request: Request, params?: PathParams) => {
+export async function handleFeature(request: Request, params?: PathParams) {
   if (params === undefined || typeof params.visit !== "string") {
     return new Response(null, { status: 400 });
   }
@@ -66,4 +68,4 @@ export const handleFeature = async (request: Request, params?: PathParams) => {
   const feature: Feature = await request.json();
   await createFeature(params.visit, feature);
   return new Response();
-};
+}
