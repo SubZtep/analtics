@@ -8,6 +8,9 @@ serve({
   "/feature/:visit": handleFeature,
 
   // Web
-  "/": serveStatic("home.html", { baseUrl: import.meta.url }),
-  "/favicon.ico": serveStatic("favicon.ico", { baseUrl: import.meta.url }),
+  "/": serveStatic("home.html", { baseUrl: import.meta.url, cache: false }),
+  "/favicon.ico": serveStatic("favicon.ico", {
+    baseUrl: import.meta.url,
+    cache: false,
+  }),
 });
