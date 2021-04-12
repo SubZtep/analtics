@@ -9,5 +9,5 @@ serve({
 
   // Web
   "/": serveStatic("home.html", { baseUrl: import.meta.url }),
-  "/favicon.ico": () => new Response(null, { status: 418 }),
+  "/favicon.ico": serveStatic("favicon.ico", { baseUrl: import.meta.url }),
 });
