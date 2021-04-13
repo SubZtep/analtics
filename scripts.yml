@@ -14,6 +14,7 @@ scripts:
     desc: Run unit tests
     cmd: deno test
     envFile: .env.test
+    noCheck: true
   new-test-account:
     desc: Create new account
     cmd: scripts/new-account.ts testes

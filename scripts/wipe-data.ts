@@ -2,12 +2,7 @@
  * This script is delete all your data, hopefully TEST DATA and not production.
  * Very dangerous!
  */
-import gql from "../core/gql.ts";
-
-export const q = gql(
-  Deno.env.get("GRAPHQL_URL")!,
-  Deno.env.get("GRAPHQL_SECRET")!,
-);
+import { q } from "../core/gql.ts";
 
 let doDelete = true;
 if (Deno.args.length === 0 || Deno.args[0] !== "--delete") {

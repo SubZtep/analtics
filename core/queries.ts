@@ -1,12 +1,8 @@
-import type * as GQL from "./gql.types.ts";
-import type { Feature, GeoData } from "../types/analytics.ts";
+import type * as GQL from "../types/gql.ts";
+import type { GeoData } from "../types/analytics.ts";
 import { cyan, green, red } from "../deps.ts";
-import gql from "./gql.ts";
-
-export const q = gql(
-  Deno.env.get("GRAPHQL_URL")!,
-  Deno.env.get("GRAPHQL_SECRET")!,
-);
+import { createGeo } from "./creates.ts";
+import { q } from "./gql.ts";
 
 /**
  * Query all the existing _Visits_ which belongs to the _Account_ in `.env` file.
@@ -52,36 +48,6 @@ export async function accountVisits(
   } while (after);
 }
 
-async function insertGeo(geo: GeoData): Promise<string | undefined> {
-  const query = `mutation {
-    createGeo(data: {
-      ${geo.city ? `city: "${geo.city.names.en}",` : ""}
-      continent: "${geo.continent.names.en}",
-      country: "${geo.country.names.en}",
-      latitude: ${geo.location.latitude},
-      longitude: ${geo.location.longitude},
-      timeZone: "${geo.location.time_zone}"
-    }) {
-     _id
-    }
-  }`;
-  let res: GQL.CreateGeo;
-
-  try {
-    res = await q(query);
-  } catch (e) {
-    console.error(red(e.message));
-    return;
-  }
-
-  if (res.error) {
-    console.error(red(res.error.message));
-    return;
-  }
-
-  return res.createGeo._id;
-}
-
 async function queryGeo({ location }: GeoData): Promise<string | undefined> {
   const query = `
     query {
@@ -90,20 +56,7 @@ async function queryGeo({ location }: GeoData): Promise<string | undefined> {
       }
     }
   `;
-
-  let res: GQL.GeoCoords;
-  try {
-    res = await q(query);
-  } catch (e) {
-    console.error(red(e.message));
-    return;
-  }
-
-  if (res.error) {
-    console.error(red(res.error.message));
-    return;
-  }
-  return res.geoCoords?._id;
+  return (await q(query)).geoCoords?._id;
 }
 
 export async function getGeoId(geo: GeoData) {
@@ -111,153 +64,5 @@ export async function getGeoId(geo: GeoData) {
   if (id) {
     return id;
   }
-  return await insertGeo(geo);
-}
-
-export async function linkVisitGeo(
-  geoId: string,
-  visitId: string,
-): Promise<string | undefined> {
-  const query = `mutation {
-    updateVisit(id: ${visitId}, data: {
-      geo: {
-        connect: ${geoId}
-      }
-    }) {
-     _id
-    }
-  }`;
-  let res: GQL.UpdateVisit;
-  try {
-    res = await q(query);
-  } catch (e) {
-    console.error(red(e.message));
-    return;
-  }
-  if (res.error) {
-    console.error(red(res.error.message));
-    return;
-  }
-  return res.updateVisit._id;
-}
-
-export async function createAccount(
-  name: string,
-): Promise<string | undefined> {
-  const query = `mutation {
-    createAccount(data: {
-      name: "${name.replaceAll('"', '\\"')}",
-    }) {
-     _id
-    }
-  }`;
-  let res: GQL.CreateAccount;
-  try {
-    res = await q(query);
-  } catch (e) {
-    console.error(red(e.message));
-    return;
-  }
-  if (res.error) {
-    console.error(red(res.error.message));
-    return;
-  }
-  return res.createAccount._id;
-}
-
-export async function createVisit(
-  account: string,
-  request: Request,
-  noScript: boolean,
-): Promise<string | undefined> {
-  const query = `mutation {
-    createVisit(data: {
-      account: {
-        connect: ${account}
-      },
-      ip: "${request.headers.get("x-forwarded-for")}",
-      userAgent: "${request.headers.get("user-agent")}",
-      noscript: ${String(noScript)},
-      created: "${new Date().toISOString()}"
-    }) {
-     _id
-    }
-  }`;
-  let res: GQL.CreateVisit;
-  try {
-    res = await q(query);
-  } catch (e) {
-    console.error(red(e.message));
-    return;
-  }
-  if (res.error) {
-    console.error(red(res.error.message));
-    return;
-  }
-  return res.createVisit._id;
-}
-
-export async function createEvent(
-  visit: string,
-  name: string,
-  value?: string,
-): Promise<string | undefined> {
-  const query = `mutation {
-    createEvent(data: {
-      name: "${name}",
-      ${value ? `value: "${value.replaceAll('"', '\\"')}",` : ""}
-      created: "${new Date().toISOString()}",
-      visit: {
-        connect: ${visit}
-      }
-    }) {
-     _id
-    }
-  }`;
-  let res: GQL.CreateEvent;
-  try {
-    res = await q(query);
-  } catch (e) {
-    console.error(red(e.message));
-    return;
-  }
-  if (res.error) {
-    console.error(red(res.error.message));
-    return;
-  }
-  return res.createEvent._id;
-}
-
-export async function createFeature(
-  visit: string,
-  feature: Feature,
-): Promise<string | undefined> {
-  const query = `mutation {
-    createFeature(data: {
-      location: "${feature.location}",
-      referrer: "${feature.referrer}",
-      screenWidth: ${feature.screenWidth},
-      screenHeight: ${feature.screenHeight},
-      innerWidth: ${feature.innerWidth},
-      innerHeight: ${feature.innerHeight},
-      pixelRatio: ${feature.pixelRatio},
-      visit: {
-        connect: ${visit}
-      }
-    }) {
-     _id
-    }
-  }`;
-  let res: GQL.CreateFeature;
-  try {
-    res = await q(query);
-  } catch (e) {
-    console.error(red(e.message));
-    return;
-  }
-  if (res.error) {
-    console.error(red(res.error.message));
-    return;
-  }
-  return res.createFeature._id;
+  return await createGeo(geo);
 }

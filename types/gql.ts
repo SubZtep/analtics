@@ -1,10 +1,4 @@
-interface GQLError {
-  error?: {
-    message: string;
-  };
-}
-
-export interface AccountVisits extends GQLError {
+export interface AccountVisits {
   findAccountByID: {
     name: string;
     visits: {
@@ -17,44 +11,14 @@ export interface AccountVisits extends GQLError {
   };
 }
 
-export interface CreateGeo extends GQLError {
-  createGeo: {
-    _id: string;
-  };
-}
-
-export interface GeoCoords extends GQLError {
+export interface GeoCoords {
   geoCoords: {
     _id: string;
   } | null;
 }
 
-export interface UpdateVisit extends GQLError {
+export interface UpdateVisit {
   updateVisit: {
-    _id: string;
-  };
-}
-
-export interface CreateAccount extends GQLError {
-  createAccount: {
-    _id: string;
-  };
-}
-
-export interface CreateVisit extends GQLError {
-  createVisit: {
-    _id: string;
-  };
-}
-
-export interface CreateEvent extends GQLError {
-  createEvent: {
-    _id: string;
-  };
-}
-
-export interface CreateFeature extends GQLError {
-  createFeature: {
     _id: string;
   };
 }

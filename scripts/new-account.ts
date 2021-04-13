@@ -1,4 +1,4 @@
-import { createAccount } from "../core/queries.ts";
+import { createAccount } from "../core/creates.ts";
 
 if (Deno.args.length !== 1) {
   console.log("The only argument is the account name.");

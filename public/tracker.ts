@@ -1,6 +1,6 @@
 import type { PathParams } from "../deps.ts";
 import type { Feature } from "../graphql/analtics.ts";
-import { createEvent, createFeature, createVisit } from "../core/queries.ts";
+import { createEvent, createFeature, createVisit } from "../core/creates.ts";
 
 function js(origin: string, visit: string) {
   return `

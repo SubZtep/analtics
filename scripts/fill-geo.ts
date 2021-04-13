@@ -1,5 +1,7 @@
+import type { GeoData } from "../types/analtics.ts";
 import Kia, { Spinners } from "https://deno.land/x/kia@v0.1.0/mod.ts";
-import { accountVisits, getGeoId, linkVisitGeo } from "../core/queries.ts";
+import { linkVisitGeo } from "../core/creates.ts";
+import { accountVisits, getGeoId } from "../core/queries.ts";
 import geoip from "../core/geoip.ts";
 
 await accountVisits(async (visitId, ip) => {
@@ -10,9 +12,11 @@ await accountVisits(async (visitId, ip) => {
   });
   kia.start();
 
-  const geo = geoip(ip);
-  if (geo === undefined) {
-    kia.fail(`${ip} not found`);
+  let geo: GeoData;
+  try {
+    geo = geoip(ip);
+  } catch (e) {
+    kia.fail(e.message);
     return;
   }
 
