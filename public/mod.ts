@@ -8,7 +8,14 @@ serve({
   "/feature/:visit": handleFeature,
 
   // Web
-  "/": serveStatic("home.html", { baseUrl: import.meta.url, cache: false }),
+  "/": serveStatic("home.html", {
+    baseUrl: import.meta.url,
+    cache: false,
+    intervene: (response) => {
+      response.headers.set("Content-Type", "text/html; charset=utf-8");
+      return response;
+    },
+  }),
   "/favicon.ico": serveStatic("favicon.ico", {
     baseUrl: import.meta.url,
     cache: false,
