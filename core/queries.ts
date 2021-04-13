@@ -1,12 +1,11 @@
 import type * as GQL from "../types/gql.ts";
 import type { GeoData } from "../types/analytics.ts";
-import { cyan, green, red } from "../deps.ts";
 import { createGeo } from "./creates.ts";
 import { q } from "./gql.ts";
 
 /**
  * Query all the existing _Visits_ which belongs to the _Account_ in `.env` file.
- * @param handleGeo ‒ Callback function with Visit ID and IP for process.
+ * @param handleGeo ‒ Callback function with Visit ID and IP for process for no geo.
  * @param limit ‒ Number of items per requests.
  */
 export async function accountVisits(
@@ -14,7 +13,6 @@ export async function accountVisits(
   limit = 10,
 ) {
   let after: string | null = null;
-  // TODO: filter visits with geo data
 
   do {
     const res: GQL.AccountVisits = await q(`
@@ -27,6 +25,9 @@ export async function accountVisits(
             data {
               _id
               ip
+              geo {
+                _id
+              }
             }
             after
           }
@@ -34,14 +35,16 @@ export async function accountVisits(
       }
     `);
 
-    console.log(green("Geo data for"), cyan(res.findAccountByID.name));
+    console.log("account", res.findAccountByID.name);
 
     if (res.findAccountByID.visits.data.length === 0) {
-      console.info(red("No visit data on this page."));
+      console.info("no visits");
     }
 
-    for (const { _id, ip } of res.findAccountByID.visits.data) {
-      await handleGeo(_id, ip);
+    for (const { _id, ip, geo } of res.findAccountByID.visits.data) {
+      if (geo === null) {
+        await handleGeo(_id, ip);
+      }
     }
 
     after = res.findAccountByID.visits.after;

@@ -30,17 +30,20 @@ export async function createAccount(name: string): Promise<string> {
 
 export async function createVisit(
   account: string,
-  request: Request,
-  noScript: boolean,
+  options: {
+    ip: string;
+    userAgent: string;
+    noScript: boolean;
+  },
 ): Promise<string> {
   const query = `mutation {
     createVisit(data: {
       account: {
         connect: ${account}
       },
-      ip: "${request.headers.get("x-forwarded-for")}",
-      userAgent: "${request.headers.get("user-agent")}",
-      noscript: ${String(noScript)},
+      ip: "${options.ip}",
+      userAgent: "${options.userAgent}",
+      noscript: ${String(options.noScript)},
       created: "${new Date().toISOString()}"
     }) {
      _id

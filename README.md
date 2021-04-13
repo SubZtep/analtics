@@ -13,8 +13,7 @@ _tbc._
 
 ## Requirements
 
-Here is a software requirement list that is supposed to be installed on the
-developer machine.
+Software list that is supposed to be installed on the developer machine.
 
 - [Deno](https://deno.land) — TypeScript Runtime.
 - [`deployctl` tool](https://deno.com/deploy/docs/running-scripts-locally) — For
@@ -49,6 +48,8 @@ Start up local FaunaDB and create `.env.test` file.
 ```sh
 $ ./scripts/faunadb-test-start.sh
 ```
+
+> Once it's up, run `vr test`.
 
 ### Stop
 

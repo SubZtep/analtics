@@ -5,6 +5,9 @@ export interface AccountVisits {
       data: {
         _id: string;
         ip: string;
+        geo: {
+          _id: string
+        } | null
       }[];
       after: string | null;
     };

@@ -30,7 +30,11 @@ export async function handleTracker(request: Request, params?: PathParams) {
   }
 
   const hasJS = params.noscript !== "noscript";
-  const visit = await createVisit(params.account, request, !hasJS);
+  const visit = await createVisit(params.account, {
+    ip: request.headers.get("x-forwarded-for") || "",
+    userAgent: request.headers.get("user-agent") || "",
+    noScript: !hasJS,
+  });
 
   if (visit === undefined) {
     return new Response(null, { status: 500 });

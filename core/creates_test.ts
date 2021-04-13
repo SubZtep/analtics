@@ -1,41 +1,112 @@
-import type { GeoData } from "../types/analtics.ts";
 import { assert } from "../dev_deps.ts";
-import { createGeo } from "./creates.ts";
+import { createEvent, createFeature, createVisit } from "./creates.ts";
 
-const geo: GeoData = {
-  city: {
-    geoname_id: 2646003,
-    names: {
-      en: "Islington",
+const visits = [
+  {
+    ip: "81.99.217.104",
+    userAgent:
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:88.0) Gecko/20100101 Firefox/88.0",
+    noScript: false,
+    feature: {
+      location: "desktop location",
+      referrer: "desktop referrer",
+      screenWidth: 1920,
+      screenHeight: 1080,
+      innerWidth: 800,
+      innerHeight: 600,
+      pixelRatio: 1,
     },
+    events: [
+      {
+        name: "visibilitychange",
+        value: "hidden",
+      },
+      {
+        name: "visibilitychange",
+        value: "visible",
+      },
+      {
+        name: "visibilitychange",
+        value: "hidden",
+      },
+    ],
   },
-  continent: {
-    code: "EU",
-    geoname_id: 6255148,
-    names: {
-      en: "Europe",
+  {
+    ip: "81.99.217.104",
+    userAgent:
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:88.0) Gecko/20100101 Firefox/88.0",
+    noScript: false,
+    feature: {
+      location: "desktop location",
+      referrer: "desktop referrer",
+      screenWidth: 1920,
+      screenHeight: 1080,
+      innerWidth: 800,
+      innerHeight: 600,
+      pixelRatio: 1,
     },
+    events: [
+      {
+        name: "visibilitychange",
+        value: "hidden",
+      },
+    ],
   },
-  country: {
-    geoname_id: 2635167,
-    iso_code: "GB",
-    names: {
-      en: "United Kingdom",
+  {
+    ip: "81.99.217.104",
+    userAgent:
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:88.0) Gecko/20100101 Firefox/88.0",
+    noScript: true,
+  },
+  {
+    ip: "92.40.176.154",
+    userAgent:
+      "Mozilla/5.0 (Android 10; Mobile; rv:87.0) Gecko/87.0 Firefox/87.0",
+    noScript: false,
+    feature: {
+      location: "mobile location",
+      referrer: "mobile referrer",
+      screenWidth: 414,
+      screenHeight: 861,
+      innerWidth: 414,
+      innerHeight: 723,
+      pixelRatio: 2.6,
     },
+    events: [
+      {
+        name: "visibilitychange",
+        value: "hidden",
+      },
+    ],
   },
-  location: {
-    latitude: 51.5305,
-    longitude: -0.0968,
-    time_zone: "Europe/London",
-    accuracy_radius: 0,
-  },
-};
+];
 
-Deno.test("createGeo #1", async () => {
-  console.log(await createGeo(geo));
-  assert(typeof await createGeo(geo) === "string");
-});
+for (const visit of visits) {
+  let visitId: string;
+  Deno.test("create visit", async () => {
+    const { ip, userAgent, noScript } = visit;
+    visitId = await createVisit(Deno.env.get("ACCOUNT")!, {
+      ip,
+      userAgent,
+      noScript,
+    });
+    assert(typeof visitId === "string");
+  });
 
-// Deno.test("createGeo #2", () => {
-//   assertThrowsAsync<string>(async () => await createGeo(geo));
-// });
+  if (visit.feature) {
+    Deno.test("create feature", async () => {
+      const featureId = await createFeature(visitId, visit.feature);
+      assert(typeof featureId === "string");
+    });
+  }
+
+  if (visit.events) {
+    for (const event of visit.events) {
+      const { name, value } = event;
+      Deno.test("create event", async () => {
+        const eventId = await createEvent(visitId, name, value);
+        assert(typeof eventId === "string");
+      });
+    }
+  }
+}

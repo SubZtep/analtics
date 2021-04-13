@@ -12,7 +12,9 @@ scripts:
     cmd: deployctl run --no-check ./public/routes.ts
   test:
     desc: Run unit tests
-    cmd: deno test
+    cmd:
+      - deno test
+      - scripts/fill-geo.ts
     envFile: .env.test
     noCheck: true
   new-test-account:
