@@ -14,7 +14,7 @@ serve({
     intervene: (response) => {
       response.headers.set("Content-Type", "text/html; charset=utf-8");
       response.headers.set("Access-Control-Allow-Origin", "*");
-      response.headers.set("Content-Security-Policy", "default-src *; style-src *");
+      response.headers.set("Content-Security-Policy", "default-src * 'unsafe-inline' 'unsafe-eval'; style-src * 'unsafe-inline'");
       return response;
     },
   }),
