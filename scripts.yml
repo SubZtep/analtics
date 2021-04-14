@@ -9,7 +9,12 @@ allow:
 scripts:
   start:
     desc: Start local server
-    cmd: deployctl run --no-check ./public/mod.ts
+    cmd:
+      ppl:
+        - deployctl run ./public/mod.ts
+        - npx http-server -a localhost -p 8081 ./public
+    envFile: .env.test
+    noCheck: true
   test:
     desc: Run unit tests
     cmd:
@@ -26,6 +31,11 @@ scripts:
     desc: Fill geo location data based on visitor IP
     cmd: scripts/fill-geo.ts
     noCheck: true
+  fill-geo-test:
+    desc: Fill geo location data based on visitor IP
+    cmd: scripts/fill-geo.ts
+    noCheck: true
+    envFile: .env.test
   new-account:
     desc: Create new account
     cmd: scripts/new-account.ts
@@ -33,3 +43,10 @@ scripts:
   wipe-data:
     desc: Delete all data
     cmd: scripts/wipe-data.ts
+  import-exported:
+    desc: Import fdm exported json data to docker WIP
+    cmd: scripts/import-exported.ts
+    unstable: true
+    noCheck: true
+    watch: true
+    envFile: .env.test
