@@ -9,7 +9,7 @@ allow:
 scripts:
   start:
     desc: Start local server
-    cmd: deployctl run --no-check ./public/routes.ts
+    cmd: deployctl run --no-check ./public/mod.ts
   test:
     desc: Run unit tests
     cmd:

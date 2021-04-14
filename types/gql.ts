@@ -6,8 +6,8 @@ export interface AccountVisits {
         _id: string;
         ip: string;
         geo: {
-          _id: string
-        } | null
+          _id: string;
+        } | null;
       }[];
       after: string | null;
     };

@@ -3,8 +3,260 @@
   <head>
     <meta charset="utf-8">
     <title>Analtics</title>
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+      integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+      crossorigin=""
+    />
+    <script
+      src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+      integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+      crossorigin=""
+    ></script>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        color: #fff;
+        font: 1rem Helvetica;
+        letter-spacing: 0.5px;
+      }
+      .container {
+        width: 100vw;
+        height: 100vh;
+        display: grid;
+        grid-template-columns: 185px auto;
+        grid-template-rows: 50px auto;
+        grid-template-areas:
+          "header header"
+          "sidebar map";
+      }
+      .header {
+        grid-area: header;
+        background-color: #333;
+        justify-content: space-between;
+        align-items: center;
+        overflow: auto;
+        display: flex;
+        padding: 8px;
+      }
+      .credentials {
+        gap: 12px;
+        opacity: 0.6;
+        display: flex;
+        align-items: center;
+        transition: opacity 150ms;
+      }
+      .header:hover .credentials {
+        opacity: 1;
+      }
+      .sidebar {
+        grid-area: sidebar;
+        background-color: #666;
+        text-align: center;
+        overflow: auto;
+        padding: 8px;
+      }
+      #name {
+        font-size: 2rem;
+      }
+      #map {
+        grid-area: map;
+      }
+      #data {
+        display: flex;
+        flex-direction: column;
+        margin-top: 8px;
+        gap: 4px;
+      }
+      .gh {
+        color: #111;
+        font-weight: bold;
+        font-size: 0.75rem;
+        position: fixed;
+        bottom: 8px;
+        left: 8px;
+      }
+    </style>
+    <script>
+      class DayButton extends HTMLElement {
+        static get observedAttributes() {
+          return ["day", "count"]
+        }
+        constructor() {
+          super()
+          const shadowRoot = this.attachShadow({ mode: "open" })
+          const style = document.createElement("style")
+          style.textContent = ":host button { width: 100%; font: 0.9rem Helvetica; padding: 2px; }"
+          shadowRoot.appendChild(style)
+          this.btn = document.createElement("button")
+          shadowRoot.appendChild(this.btn)
+        }
+        attributeChangedCallback(name, _oldValue, newValue) {
+          this[name] = name === "day" ? newValue.split("-").reverse().join("/") : newValue
+          this.btn.innerText = `${this.day} 🚸 ${this.count}`
+        }
+      }
+      class MemText extends HTMLElement {
+        constructor() {
+          super()
+          const shadowRoot = this.attachShadow({ mode: "open" })
+          const style = document.createElement("style")
+          style.textContent = ":host input { color: #fff; background: transparent; }"
+          shadowRoot.appendChild(style)
+          this.input = document.createElement("input")
+          this.input.setAttribute("type", "text")
+          this.input.addEventListener("change", () => {
+            this.value = this.input.value
+            window.localStorage.setItem(this.id, this.value)
+          })
+          shadowRoot.appendChild(this.input)
+        }
+        connectedCallback() {
+          this.input.setAttribute("size", this.getAttribute("size"))
+          this.value = window.localStorage.getItem(this.id)
+          this.input.setAttribute("value", this.value)
+        }
+      }
+      customElements.define("day-button", DayButton)
+      customElements.define("mem-text", MemText);
+    </script>
   </head>
   <body>
-    <tt>▅▀▅ █▚▌ ▅▀▅ █▄ ▀█▀ █ ◖ ▄█▀</tt>
+    <div class="container">
+      <div class="header">
+        <tt>▅▀▅ █▚▌ ▅▀▅ █▄ ▀█▀ █ ◖ ▄█▀</tt>
+        <div class="credentials">
+          account <mem-text id="account" size="18"></mem-text>
+          secret <mem-text id="secret" size="46"></mem-text>
+          endpoint <mem-text id="endpoint" size="30"></mem-text>
+          <button id="next">next</button>
+        </div>
+      </div>
+      <div class="sidebar">
+        <div id="name">🦠</div>
+        <div id="data"></div>
+      </div>
+      <div id="map"></div>
+    </div>
+    <a href="https://github.com/SubZtep/analtics" class="gh">&lt;GitHub&gt;</a>
+    <script>
+      const limit = 5
+      const dailyStats = new Map()
+      const markers = []
+      let map
+
+      const removeMarkers = () => {
+        while (markers.length > 0) {
+          markers.pop().remove()
+        }
+      }
+
+      const loadMarkers = day => () => {
+        removeMarkers()
+        const { bounds } = dailyStats.get(day)
+        if (bounds.length > 0) {
+          map.fitBounds(bounds)
+          bounds.forEach(coords => void markers.push(L.marker(coords).addTo(map)))
+        }
+      }
+
+      const populateDaily = visits => {
+        visits.forEach(({ created, geo }) => {
+          const day = created.split("T")[0]
+          const stat = dailyStats.has(day) ? dailyStats.get(day) : { bounds: [], count: 0 }
+          if (geo) {
+            const coords = Object.values(geo)
+            const cj = coords.join("x")
+            if (stat.bounds.every(bc => bc.join("x") !== cj)) {
+              stat.bounds.push(coords)
+            }
+          }
+          stat.count++
+          dailyStats.set(day, stat)
+        })
+      }
+
+      const renderDayButtons = () => {
+        const dataEl = document.querySelector("#data")
+        dataEl.querySelectorAll("day-button").forEach(el => el.parentNode.removeChild(el))
+        dailyStats.forEach(({ count }, day) => {
+          const btn = document.createElement("day-button")
+          btn.setAttribute("day", day)
+          btn.setAttribute("count", count)
+          btn.addEventListener("click", loadMarkers(day))
+          dataEl.appendChild(btn)
+        })
+      }
+
+      const fetchData = async (nextBtn) => {
+        nextBtn.setAttribute("disabled", "disabled")
+        const cursor = nextBtn.getAttribute("data-after")
+        const idval = id => document.querySelector(`#${id}`).value
+
+        const res = await fetch(idval("endpoint"), {
+          method: "POST",
+          body: JSON.stringify({
+            query: `{
+              findAccountByID(id: ${idval("account")}) {
+                name
+                visits(_size: ${limit}${cursor !== null ? `, _cursor: "${cursor}"` : ""}) {
+                  data {
+                    created
+                    geo {
+                      latitude
+                      longitude
+                    }
+                  }
+                  after
+                }
+              }
+            }`,
+          }),
+          headers: {
+            Authorization: `Bearer ${idval("secret")}`,
+            "Content-Type": "application/json",
+          },
+        })
+        if (!res.ok) {
+          alert(res.statusText)
+          return
+        }
+        const json = await res.json()
+        if (json.errors) {
+          alert(json.errors[0].message)
+          return
+        }
+
+        const { name, visits: { data, after } } = json.data.findAccountByID
+        document.querySelector("#name").innerText = name
+
+        if (after) {
+          nextBtn.setAttribute("data-after", after)
+          nextBtn.removeAttribute("disabled")
+        }
+        return data
+      }
+
+      document.addEventListener("DOMContentLoaded", () => {
+          // init map
+          map = L.map("map").setView([51.505, -0.09], 13)
+          L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+          }).addTo(map)
+
+          // trigger db query
+          const nextBtn = document.querySelector("#next")
+          nextBtn.addEventListener("click", async () => {
+            const visits = await fetchData(nextBtn)
+            populateDaily(visits)
+            renderDayButtons()
+          })
+        }
+      )
+    </script>
   </body>
 </html>
