@@ -22,9 +22,9 @@ for await (const value of reader) {
   }
 
   const { data } = json;
-  delete data.geo
-  delete data.account
-  data.created = data.created["@ts"]
-  createVisit(account, data)
-  console.log(data.created)
+  delete data.geo;
+  delete data.account;
+  data.created = data.created["@ts"];
+  createVisit(account, data);
+  console.log(data.created);
 }

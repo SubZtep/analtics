@@ -1,6 +1,9 @@
 {
   "deno.enable": true,
   "deno.lint": true,
-  "deno.unstable": false,
-  "workbench.colorTheme": "SynthWave '84"
+  "deno.unstable": true,
+  "deno.suggest.imports.hosts": {
+    "https://x.nest.land/": true
+  },
+  "workbench.colorTheme": "SynthWave '84",
 }

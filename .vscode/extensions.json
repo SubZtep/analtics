@@ -1,0 +1,8 @@
+{
+  "recommendations": [
+    "denoland.vscode-deno",
+    "graphql.vscode-graphql",
+    "ms-azuretools.vscode-docker",
+    "robbowen.synthwave-vscode"
+  ]
+}

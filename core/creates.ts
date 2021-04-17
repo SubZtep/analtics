@@ -35,7 +35,7 @@ export async function createVisit(
     userAgent: string;
     noScript: boolean;
     created?: string;
-  }
+  },
 ): Promise<string> {
   const query = `mutation {
     createVisit(data: {
@@ -56,7 +56,7 @@ export async function createVisit(
 export async function createEvent(
   visit: string,
   name: string,
-  value?: string
+  value?: string,
 ): Promise<string> {
   const query = `mutation {
     createEvent(data: {
@@ -75,7 +75,7 @@ export async function createEvent(
 
 export async function createFeature(
   visit: string,
-  feature: Feature
+  feature: Feature,
 ): Promise<string> {
   const query = `mutation {
     createFeature(data: {
@@ -98,7 +98,7 @@ export async function createFeature(
 
 export async function linkVisitGeo(
   geoId: string,
-  visitId: string
+  visitId: string,
 ): Promise<string | undefined> {
   const query = `mutation {
     updateVisit(id: ${visitId}, data: {

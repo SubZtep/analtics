@@ -15,7 +15,7 @@ export async function accountVisits(
   let after: string | null = null;
 
   do {
-    const res: GQL.AccountVisits = await q(`
+    const res: GQL.AccountVisits = await q(`#graphql
       query {
         findAccountByID(id: ${Deno.env.get("ACCOUNT")}) {
           name

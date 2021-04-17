@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Analtics</title>
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+      integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+      crossorigin="anonymous"
+    />
+    <script
+      src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+      integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+      crossorigin="anonymous"
+    ></script>
+    <script src="https://kit.fontawesome.com/0dedf835ec.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="style.css" />
+    <script src="elements.js"></script>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <!-- <tt>▅▀▅ █▚▌ ▅▀▅ █▄ ▀█▀ █ ◖ ▄█▀</tt> -->
+        <!-- <tt>◀ ▅▀▅ ▄▌ ▅▀▅ ▄ █ 🞉</tt> -->
+        <div class="credentials">
+          <i class="fad fa-user"></i> <mem-text id="account" size="18"></mem-text>
+          <i class="fad fa-key"></i> <mem-text id="secret" size="46"></mem-text>
+          <i class="fad fa-anchor"></i> <mem-text id="endpoint" size="30"></mem-text>
+          <button id="next">next</button>
+        </div>
+      </div>
+      <div class="sidebar">
+        <div id="name">🦠</div>
+        <div id="data"></div>
+      </div>
+      <div id="map"></div>
+    </div>
+    <a href="https://github.com/SubZtep/analtics" class="gh">&lt;GitHub&gt;</a>
+    <script src="map.js"></script>
+  </body>
+</html>
