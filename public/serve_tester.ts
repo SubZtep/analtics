@@ -18,29 +18,18 @@ export default async function serveTester() {
     "Content-Type": "text/javascript; charset=UTF-8",
   });
 
-  let js = ""
+  const scripts = ["tester.js", "tester_recorder.js"];
+
+  let js = "";
 
   try {
-    const ress = await Promise.all([
-      // https://github.com/antonmedv/finder
-      fetch(new URL("finder.js", import.meta.url)),
-      fetch(new URL("tester.js", import.meta.url)),
-    ])
-
-    // js = (await Promise.all(ress.map(res => res.text()))).join(";")
-    js = (await Promise.all(ress.map(res => res.text()))).join(";").replace("export function", "function")
-
-    // js += (await finder.text()).replace("export ", "")
-    // js += await tester.text()
-
+    const resAll = await Promise.all(
+      scripts.map((src) => fetch(new URL(src, import.meta.url)))
+    );
+    js = (await Promise.all(resAll.map((res) => res.text()))).join(";");
   } catch {
     return new Response(null, { status: 500 });
   }
-
-  // const res = await fetch(new URL("tester.js", import.meta.url));
-  // if (!res.ok) {
-  //   return new Response(null, { status: 500 });
-  // }
 
   // const js =
   //   // `window.KAJAIO = ${JSON.stringify(vars)};\n\n` +
