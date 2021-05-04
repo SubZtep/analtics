@@ -1,5 +1,5 @@
 envFile:
-  - .env
+  - .env.test
 
 allow:
   - read
@@ -10,11 +10,11 @@ scripts:
   start:
     desc: Start local server
     #cmd: deno run --no-check --addr=localhost:8080 ./public/mod.ts
-    cmd: deployctl run --no-check --addr=localhost:8080 ./public/mod.ts
-    envFile: .env.test
-    unstable: true
-    noCheck: true
-    watch: true
+    cmd: deployctl run --no-check --addr=localhost:8080 --watch ./public/mod.ts
+    # envFile: .env.test
+    # unstable: true
+    # noCheck: true
+    # watch: true
 
   test:
     desc: Run unit tests
